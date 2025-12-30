@@ -72,7 +72,7 @@ class DbTools {
         const records = existing[title] ?? []
 
         // CREATE (POST)
-        if (!data._id) {
+        if (!data?._id) {
             const newRecord = {
                 _id: `id-${Date.now()}`,
                 ...data
@@ -102,7 +102,7 @@ class DbTools {
         await fs.writeFile(
             docPath,
             this._serialize(result),
-            'utf8'
+            this.#UTF8
         )
 
         return result
@@ -116,7 +116,7 @@ class DbTools {
         const existing = await this.readJsonDoc(docPath)
         const records = existing[title] ?? []
 
-        const filtered = records.filter(r => r._id !== id)
+        const filtered = records.filter(r => r._id !== _id)
 
         if (filtered.length === records.length) return existing
 

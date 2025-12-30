@@ -1,5 +1,5 @@
-const userController = require('../controllers/UserController')
-const { httpTools } = require('../utils/HttpTools')
+const userController = require('../controller/users/users.controller')
+const { httpTools } = require('../utils/http.helper')
 
 async function userRouter(req, res) {
     try {

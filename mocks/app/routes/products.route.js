@@ -1,5 +1,5 @@
-const productController = require('../controllers/ProductController')
-const { httpTools } = require('../utils/HttpTools')
+const productController = require('../controller/products/products.controller')
+const { httpTools } = require('../utils/http.helper')
 
 async function productRouter(req, res) {
     try {

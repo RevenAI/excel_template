@@ -1,4 +1,5 @@
-const BaseController = require("../base.controller");
+const BaseController = require("../base.controller")
+const AppError = require('../../utils/http.error')
 
 class UserController extends BaseController {
     constructor() {
