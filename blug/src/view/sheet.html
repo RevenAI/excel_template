@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Grade Editor</title>
+
+<!-- Luckysheet CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/plugins/css/pluginsCss.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/plugins/plugins.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/css/luckysheet.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/assets/iconfont/iconfont.css" />
+
+<style>
+  html, body { height: 100%; margin: 0; }
+  #toolbar { padding: 8px; border-bottom: 1px solid #ccc; }
+  #luckysheet { position:absolute; width:100%; height:calc(100% - 40px); top:40px; left:0; }
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <button id="save">Save</button>
+</div>
+
+<!-- Table container -->
+<div id="luckysheet"></div>
+
+<!-- Luckysheet JS -->
+<script src="https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/plugins/js/plugin.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/luckysheet.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/luckysheet@latest/dist/locale/en-US.js"></script>
+
+<!-- Your editor script -->
+<script type="module" src="/blug/src/controllers/spreasheet/grade-editor.js"></script>
+</body>
+</html>

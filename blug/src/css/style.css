@@ -1,0 +1,51 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background: #f7f7f7;
+}
+h2 {
+  margin-top: 30px;
+  color: #006400;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 4px;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  background: #fff;
+}
+th, td {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  text-align: left;
+}
+th {
+  background: #e8f5e9;
+  font-weight: bold;
+}
+input[type="number"], input[type="text"], textarea, select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px;
+}
+input[readonly] {
+  background: #f0f0f0;
+  border: none;
+}
+textarea {
+  min-height: 50px;
+  resize: vertical;
+}
+button#save {
+  margin-top: 20px;
+  padding: 8px 16px;
+  background: #006400;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+button#save:hover {
+  background: #004d00;
+}

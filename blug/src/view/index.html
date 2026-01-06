@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Grade Editor</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<form id="grade-editor">
+
+  <h2>SECTION 1: BASIC INFO</h2>
+  <table>
+    <tr><td>Student Name</td><td><input type="text" id="student-name" readonly></td></tr>
+    <tr><td>Class</td><td><input type="text" id="student-class" readonly></td></tr>
+    <tr><td>Student ID</td><td><input type="text" id="student-id" readonly></td></tr>
+  </table>
+
+  <h2>SECTION 2: SUBJECT RECORDS</h2>
+  <table id="subjects-table">
+    <thead>
+      <tr>
+        <th>Subject</th>
+        <th>CA1</th>
+        <th>CA2</th>
+        <th>Exam</th>
+        <th>Total</th>
+        <th>Grade</th>
+        <th>Remark</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- JS will fill rows here -->
+    </tbody>
+  </table>
+
+  <h2>SECTION 3: AFFECTIVE DOMAIN</h2>
+  <table id="affective-table">
+    <thead>
+      <tr><th>Trait</th><th>Rating 1</th><th>Rating 2</th><th>Rating 3</th><th>Rating 4</th><th>Rating 5</th><th>Remark</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>SECTION 4: PSYCHOMOTOR SKILLS</h2>
+  <table id="psychomotor-table">
+    <thead>
+      <tr><th>Trait</th><th>Rating 1</th><th>Rating 2</th><th>Rating 3</th><th>Rating 4</th><th>Rating 5</th><th>Remark</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h2>SECTION 5: COMMENTS & SIGNATURES</h2>
+  <table>
+    <tr><td>Teacher Comment</td><td><input type="text" id="teacher-comment"></td></tr>
+    <tr><td>Head Teacher Comment</td><td><input type="text" id="head-comment"></td></tr>
+  </table>
+
+  <button type="button" id="save">Save</button>
+</form>
+
+<script type="module" src="/controllers/spreasheet/grade-editor.js"></script>
+</body>
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Grade Editor</title>
+<link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div id="grade-editor">
+  <div id="basic-info-section"></div>
+  <div id="subjects-section"></div>
+  <div id="affective-section"></div>
+  <div id="psychomotor-section"></div>
+  <div id="comments-section"></div>
+  <button id="save">Save</button>
+</div>
+
+<script type="module" src="/controllers/spreasheet/grade-editor.js"></script>
+</body>
+</html> -->
