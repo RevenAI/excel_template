@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Download Student Records</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f4f4f4;
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    h1 {
+      margin-bottom: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Download Student Records</h1>
+    <button id="downloadBtn">Download Excel</button>
+    <p id="status"></p>
+  </div>
+
+  <script>
+    const button = document.getElementById("downloadBtn");
+    const status = document.getElementById("status");
+
+    button.addEventListener("click", async () => {
+      status.textContent = "Downloading...";
+      try {
+        // Call your Node.js endpoint
+        const response = await fetch("/download-student-records");
+        if (!response.ok) throw new Error("Network response was not ok");
+
+        // Get the file as a blob
+        const blob = await response.blob();
+
+        // Create a temporary link to trigger download
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "student_records.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+        status.textContent = "Download complete!";
+      } catch (err) {
+        console.error(err);
+        status.textContent = "Failed to download file.";
+      }
+    });
+  </script>
+</body>
+</html>
