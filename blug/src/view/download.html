@@ -3,6 +3,142 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Download & Upload Student Records</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f4f4f4;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 0.5rem 0;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    input[type="file"] {
+      margin-top: 1rem;
+    }
+    h1 {
+      margin-bottom: 1.5rem;
+    }
+    pre {
+      text-align: left;
+      background: #f4f4f4;
+      padding: 1rem;
+      max-height: 200px;
+      overflow: auto;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Student Records</h1>
+
+    <!-- DOWNLOAD -->
+    <button id="downloadBtn">Download Excel</button>
+
+    <!-- UPLOAD -->
+    <div>
+      <input type="file" id="fileInput" accept=".xlsx" />
+      <button id="uploadBtn">Upload Excel</button>
+    </div>
+
+    <p id="status"></p>
+    <pre id="output"></pre>
+  </div>
+
+  <script>
+    const downloadBtn = document.getElementById("downloadBtn");
+    const uploadBtn = document.getElementById("uploadBtn");
+    const fileInput = document.getElementById("fileInput");
+    const status = document.getElementById("status");
+    const output = document.getElementById("output");
+
+    // ---------------- DOWNLOAD EXCEL ----------------
+    downloadBtn.addEventListener("click", async () => {
+      status.textContent = "Downloading...";
+      try {
+        const response = await fetch("/download-student-records");
+        if (!response.ok) throw new Error("Network response was not ok");
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "student_records.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+
+        status.textContent = "Download complete!";
+      } catch (err) {
+        console.error(err);
+        status.textContent = "Failed to download file.";
+      }
+    });
+
+    // ---------------- UPLOAD EXCEL ----------------
+    uploadBtn.addEventListener("click", async () => {
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Please select a file first!");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      status.textContent = "Uploading file...";
+      output.textContent = "";
+
+      try {
+        const response = await fetch("/upload-student-records", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) throw new Error("Upload failed");
+
+        const result = await response.json();
+        status.textContent = "Upload complete!";
+        output.textContent = JSON.stringify(result, null, 2);
+      } catch (err) {
+        console.error(err);
+        status.textContent = "Upload failed.";
+        output.textContent = err.message;
+      }
+    });
+ 
+ </script>
+</body>
+</html>
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Download Student Records</title>
   <style>
     body {
@@ -75,4 +211,4 @@
     });
   </script>
 </body>
-</html>
+</html> -->
