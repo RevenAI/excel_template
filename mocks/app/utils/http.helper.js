@@ -1,3 +1,5 @@
+const dbUtils = require('./db.test')
+
 class HttpTools {
 
     isPostRoute(req, path) {
@@ -62,6 +64,29 @@ class HttpTools {
         return exactMatch
             ? req.url === path
             : req.url.startsWith(path)
+    }
+
+    async sendResponse(
+    res,
+    { status = 200, data = null, message = '', error = null }
+    ) {
+        res.statusCode = status
+        res.setHeader('Content-Type', 'application/json')
+
+        const isSerialized = (data) => typeof data === 'string'
+        const isError = !!error
+
+        const normalisedData = isSerialized(data) ? data : dbUtils._serializeObj(data)
+
+        let payload
+        if (isError) {
+            payload = { success: false, data: null, error, message }
+        } else {
+            payload = { success: true, data: normalisedData, error: null, message }
+        }
+
+        res.end(isSerialized(payload) ? payload : dbUtils._serializeObj(payload))
+
     }
 }
 

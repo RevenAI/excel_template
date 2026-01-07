@@ -1,3 +1,5 @@
+const { httpTools } = require('./http.helper')
+
 class AppError extends Error {
     constructor(status, message) {
         super(message)          // allow standard Error properties
@@ -16,7 +18,7 @@ class AppError extends Error {
                 const message = err.message || 'Internal Server Error'
                 
                 // Send response (assuming a _sendResponse helper exists)
-                _sendResponse(res, { status, message, error: err })
+                httpTools.sendResponse(res, { status, message, error: err })
             }
         }
     }

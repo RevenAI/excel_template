@@ -3,6 +3,163 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Download and Upload Student Reg Form</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f4f4f4;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 2rem;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+    h1 {
+      margin-bottom: 1.5rem;
+    }
+    input[type="file"] {
+      margin: 1rem 0;
+    }
+    #status {
+      margin-top: 1rem;
+      font-size: 14px;
+    }
+    #output {
+      margin-top: 2rem;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      text-align: left;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 1rem;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Download and Upload Student Registration Form</h1>
+
+    <!-- Download Button -->
+    <button id="downloadBtn">Download Excel</button>
+
+    <!-- File Upload Section -->
+    <input type="file" id="fileInput" accept=".xlsx" />
+    <button id="uploadBtn">Upload Excel</button>
+
+    <!-- Status and Result Output -->
+    <p id="status"></p>
+    <pre id="output"></pre>
+  </div>
+
+  <script>
+    const downloadButton = document.getElementById("downloadBtn");
+    const uploadButton = document.getElementById("uploadBtn");
+    const fileInput = document.getElementById("fileInput");
+    const status = document.getElementById("status");
+    const output = document.getElementById("output");
+
+    // ---------------- DOWNLOAD EXCEL ----------------
+    downloadButton.addEventListener("click", async () => {
+      downloadButton.disabled = true;
+      status.textContent = "Downloading...";
+
+      try {
+        const response = await fetch("/download-student-reg-form", {
+          method: "GET",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Request failed: ${response.status}`);
+        }
+
+        const contentType = response.headers.get("Content-Type") || "";
+        if (!contentType.includes("spreadsheetml")) {
+          throw new Error("Invalid file type received");
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "student_registration_template.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        window.URL.revokeObjectURL(url);
+        status.textContent = "Download complete!";
+      } catch (err) {
+        console.error(err);
+        status.textContent = "Failed to download file.";
+      } finally {
+        downloadButton.disabled = false;
+      }
+    });
+
+    // ---------------- UPLOAD EXCEL ----------------
+    uploadButton.addEventListener("click", async () => {
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Please select a file first!");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      status.textContent = "Uploading file...";
+      output.textContent = "";
+
+      try {
+        const response = await fetch("/upload-files", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!response.ok) throw new Error("Upload failed");
+
+        const result = await response.json();
+        status.textContent = "Upload complete!";
+        output.textContent = JSON.stringify(result, null, 2);  // Display JSON result for debugging
+      } catch (err) {
+        console.error(err);
+        status.textContent = "Upload failed.";
+        output.textContent = err.message;
+      }
+    });
+  </script>
+</body>
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Download Student Reg Form</title>
 
   <style>
@@ -53,6 +210,7 @@
     const button = document.getElementById("downloadBtn");
     const status = document.getElementById("status");
 
+ // ---------------- DOWNLOAD EXCEL ----------------
     button.addEventListener("click", async () => {
       button.disabled = true;
       status.textContent = "Downloading...";
@@ -90,6 +248,41 @@
         button.disabled = false;
       }
     });
+  
+
+      // ---------------- UPLOAD EXCEL ----------------
+    uploadBtn.addEventListener("click", async () => {
+      if (!fileInput.files || fileInput.files.length === 0) {
+        alert("Please select a file first!");
+        return;
+      }
+
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      status.textContent = "Uploading file...";
+      output.textContent = "";
+
+      try {
+        const response = await fetch("/upload-files", {
+          method: "POST",
+          body: formData
+        });
+
+        if (!response.ok) throw new Error("Upload failed");
+
+        const result = await response.json();
+        status.textContent = "Upload complete!";
+        output.textContent = JSON.stringify(result, null, 2);
+      } catch (err) {
+        console.error(err);
+        status.textContent = "Upload failed.";
+        output.textContent = err.message;
+      }
+    });
+ 
+  
   </script>
 </body>
-</html>
+</html> -->

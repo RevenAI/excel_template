@@ -8,10 +8,10 @@ import { IStudentRegistrationRow } from "./type.js";
 // --------------------------------------------------
 // INTERNAL CONSTANTS
 // --------------------------------------------------
-const BUSINESS_ID = "64fa12c8b71a9c001234abcd";
-const CLASS_SECTION_ID = "64fa12d9a71a9c001234efgh";
-const DEPARTMENT_ID = "64fa12eaa71a9c001234ijkl";
+const BUSINESS_ID = "64fa12c8b71a9c001234abcd";  // business (e.g., school ID)
+const CLASS_SECTION_ID = "64fa12d9a71a9c001234efgh";  // class section (e.g., JSS 2)
 
+// Constants for parent-child relationship values
 const PARENT_RELATIONSHIP_VALUES = [
   "Father",
   "Mother",
@@ -60,6 +60,7 @@ function generateMockStudentRegistrations(): IStudentRegistrationRow[] {
 
     return {
       // ---------------- STUDENT ----------------
+      _id: `student-${index + 1}`,  // Generate _id for existing students
       firstName,
       surname,
       middleName: index % 3 === 0 ? "James" : undefined,
@@ -82,9 +83,8 @@ function generateMockStudentRegistrations(): IStudentRegistrationRow[] {
       useSameParent: false, // default
 
       // ---------------- SYSTEM ----------------
-      business: BUSINESS_ID,
-      classSection: CLASS_SECTION_ID,
-      department: DEPARTMENT_ID,
+      business: BUSINESS_ID,  // Store business (school ID)
+      classSection: { _id: CLASS_SECTION_ID, sectionName: "JSS 2" },  // Store classSection with _id
     };
   });
 }
@@ -93,6 +93,10 @@ function generateMockStudentRegistrations(): IStudentRegistrationRow[] {
 // PUBLIC API (MOCK)
 // --------------------------------------------------
 
+/**
+ * Fetches the list of student registrations from the mock database.
+ * Returns an array of IStudentRegistrationRow.
+ */
 export async function fetchStudentRegistrationsFromDB(): Promise<IStudentRegistrationRow[]> {
   if (STUDENT_REG_CACHE.length === 0) {
     STUDENT_REG_CACHE = generateMockStudentRegistrations();
@@ -101,6 +105,11 @@ export async function fetchStudentRegistrationsFromDB(): Promise<IStudentRegistr
   return STUDENT_REG_CACHE;
 }
 
+/**
+ * Fetches a single student registration by their email.
+ * @param email - Email of the student to fetch.
+ * @returns The student registration.
+ */
 export async function fetchStudentRegistrationByEmail(
   email: string
 ): Promise<IStudentRegistrationRow> {
@@ -112,6 +121,11 @@ export async function fetchStudentRegistrationByEmail(
   return record;
 }
 
+/**
+ * Saves a student registration to the mock database.
+ * If the student already exists, their data will be updated.
+ * @param payload - The student registration data to save.
+ */
 export async function saveStudentRegistration(
   payload: IStudentRegistrationRow
 ): Promise<void> {
@@ -120,9 +134,9 @@ export async function saveStudentRegistration(
   }
   const index = STUDENT_REG_CACHE.findIndex((s) => s.email === payload.email);
   if (index === -1) {
-    STUDENT_REG_CACHE.push(payload);
+    STUDENT_REG_CACHE.push(payload);  // Add new student if not found
   } else {
-    STUDENT_REG_CACHE[index] = { ...STUDENT_REG_CACHE[index], ...payload };
+    STUDENT_REG_CACHE[index] = { ...STUDENT_REG_CACHE[index], ...payload };  // Update existing student
   }
   console.log(`Saved registration for ${payload.firstName} ${payload.surname}`);
 }

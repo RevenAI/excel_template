@@ -1,21 +1,31 @@
-import http from 'node:http'
+import http, { IncomingMessage } from 'node:http'
 import path from 'node:path'
+import url from 'node:url'
+import fs from 'node:fs/promises'
 import { testThreeSum, testtwoSum, testtwoSumWhile } from './code/n-sum/run.js'
 import { twoSumBrute, twoSumMapWhile } from './code/n-sum/two-some.js'
 
 const PORT = 3500
 const HOST = '127.0.0.1'
 
+
 const server = http.createServer((req, res) => {
+
+
+
   res.writeHead(200, { 'Content-Type': 'application/json' })
   res.end('App Lunched Successfully')
 })
 
 
 
-console.log('TESTING TWO SUM', testtwoSum([2, 5, 7, 8, 1, 15], 7))
-console.log('TESTING TWO SUM', testtwoSumWhile([2, 5, 7, 80, 1, 45], 82))
-console.log('TESTING THREE SUM', testThreeSum([2, 5, 7, 80, 1, 45], 87))
+// console.log('TESTING TWO SUM', testtwoSum([2, 5, 7, 8, 1, 15], 7))
+// console.log('TESTING TWO SUM', testtwoSumWhile([2, 5, 7, 80, 1, 45], 82))
+// console.log('TESTING THREE SUM', testThreeSum([2, 5, 7, 80, 1, 45], 87))
+
+
+
+
 
 server.listen(PORT, HOST, () => {
   console.log(`System server running on address: http://${HOST}:${PORT}`)

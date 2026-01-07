@@ -1,4 +1,5 @@
-const dbTools = require('../utils/db.helper')
+const dbUtils = require('../utils/db.test')
+const { httpTools } = require('../utils/http.helper')
 
 class BaseController {
 
@@ -9,48 +10,59 @@ class BaseController {
     }
 
   async fetchAll(docPath) {
-    return dbTools.readJsonDoc(docPath)
+    return dbUtils.readJsonDoc(docPath)
   }
 
   async fetchById(docPath, _id) {
-    return dbTools.readJsonDoc(docPath, _id)
+    return dbUtils.readJsonDoc(docPath, _id)
   }
 
   async create(docPath, data) {
-    return dbTools.upsertJsonDoc(docPath, data)
+    return dbUtils.upsertJsonDoc(docPath, data)
   }
 
   async update(docPath, data) {
     // data already contains _id for PUT semantics
-    return dbTools.upsertJsonDoc(docPath, data)
+    return dbUtils.upsertJsonDoc(docPath, data)
   }
 
   async delete(docPath, _id) {
-    return dbTools.deleteById(docPath, _id)
+    return dbUtils.deleteById(docPath, _id)
   }
+
+  // async _sendResponse(
+  //   res,
+  //   { status = 200, data = null, message = '', error = null }
+  //   ) {
+  //       res.statusCode = status
+  //       res.setHeader('Content-Type', 'application/json')
+
+  //       const isSerialized = (data) => typeof data === 'string'
+  //       const isError = !!error
+
+  //       const normalisedData = isSerialized(data) ? data : dbUtils._serialize(data)
+
+  //       let payload
+  //       if (isError) {
+  //           payload = { success: false, data: null, error, message }
+  //       } else {
+  //           payload = { success: true, data: normalisedData, error: null, message }
+  //       }
+
+  //       res.end(isSerialized(payload) ? payload : dbUtils._serialize(payload))
+
+  //   }
 
   async _sendResponse(
     res,
     { status = 200, data = null, message = '', error = null }
-    ) {
-        res.statusCode = status
-        res.setHeader('Content-Type', 'application/json')
-
-        const isSerialized = (data) => typeof data === 'string'
-        const isError = !!error
-
-        const normalisedData = isSerialized(data) ? data : dbTools._serialize(data)
-
-        let payload
-        if (isError) {
-            payload = { success: false, data: null, error, message }
-        } else {
-            payload = { success: true, data: normalisedData, error: null, message }
-        }
-
-        res.end(isSerialized(payload) ? payload : dbTools._serialize(payload))
-
-    }
+  ) {
+  return httpTools.sendResponse(
+    res,
+    { status, data, message, error }
+  )
+  
+  }
 
 
 

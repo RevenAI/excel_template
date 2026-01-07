@@ -1,0 +1,15 @@
+{
+  "users": [
+    {
+      "_id": "id-1767130736528",
+      "name": "Ibrahim",
+      "career": "Software Engineer"
+    },
+    {
+      "_id": "id-1767132111902",
+      "name": "Jane Doe",
+      "career": "Mechanical Engineer",
+      "age": 21
+    }
+  ]
+}

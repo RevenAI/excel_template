@@ -4,18 +4,12 @@ import url from "node:url";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-
-// ================= REGISTRATION (CORRECT DOMAIN) =================
-import { generateStudentRegistrationTemplate } from "./controllers/spreasheet/student-reg/build-reg-sheet.js";
-import {
-  fetchStudentRegistrationsFromDB,
-} from "./controllers/spreasheet/student-reg/mock-api.js";
-import { parseMultipartForm, UploadedFile } from "./utils/form-data-parser.js";
-import { IStudentRegistrationRow, ParsedStudentRegistration } from "./controllers/spreasheet/student-reg/type.js";
+import { generateStudentRecordsExcel } from "./controllers/spreasheet/sstudent-record/build-student-sheet.js"; 
+import { fetchStudentsFromDB } from "./controllers/spreasheet/sstudent-record/record.js";
+import { IStudentRecord } from "./controllers/spreasheet/sstudent-record/build-student-sheet.js";
 import { parseStudentExcelFile } from "./controllers/spreasheet/sstudent-record/parse-record.js";
-import { parseStudentRegistrationExcelFile } from "./controllers/spreasheet/student-reg/student-reg-parser.js";
+import { parseMultipartForm, UploadedFile } from "./utils/form-data-parser.js";
 
-// --------------------------------------------------
 loadEnvFile("./src/.env");
 
 // Fix __dirname in ES module
@@ -25,68 +19,57 @@ const __dirname = path.dirname(__filename);
 const HOST = process.env.HOST || "127.0.0.1";
 const PORT = Number(process.env.PORT) || 3501;
 
-// --------------------------------------------------
 const server = http.createServer(async (req, res) => {
   const parsedUrl = url.parse(req.url || "", true);
   const pathname = parsedUrl.pathname || "/";
 
-  // ==================================================
-  // SERVE STATIC HTML (TEST UI)
-  // ==================================================
+  // Serve HTML page
   if (pathname === "/" || pathname === "/index.html") {
-    const filePath = path.join(__dirname, "view", "reg.html");
-
+    const filePath = path.join(__dirname, "view", "download.html");
     fs.readFile(filePath, (err, data) => {
       if (err) {
         res.writeHead(500, { "Content-Type": "text/plain" });
         res.end("Error loading page");
         return;
       }
-
       res.writeHead(200, { "Content-Type": "text/html" });
       res.end(data);
     });
-    return;
+    return; //important!
   }
 
-  // ==================================================
-  // DOWNLOAD STUDENT REGISTRATION EXCEL TEMPLATE
-  // ==================================================
-  if (pathname === "/download-student-reg-form" && req.method === "GET") {
+  // Excel download route
+  if (pathname === "/download-student-records" && req.method === "GET") {
     try {
-      // Fetch prefilled registration data (MOCK API)
-      const registrations = await fetchStudentRegistrationsFromDB();
-
-      // Generate Excel template (editable by default)
-      const buffer = await generateStudentRegistrationTemplate(
-        registrations,
-        undefined,
-        undefined,
-        false, // readOnly = false (teachers can edit)
-        7
-      );
+      const students: IStudentRecord[] = await fetchStudentsFromDB();
+      const buffer = await generateStudentRecordsExcel(students);
 
       res.writeHead(200, {
         "Content-Type":
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "Content-Disposition":
-          'attachment; filename="student_registration_template.xlsx"',
+        "Content-Disposition": `attachment; filename="student_records.xlsx"`,
         "Content-Length": buffer.byteLength,
       });
-
       res.end(buffer);
     } catch (err) {
-      console.error("Excel generation failed:", err);
-
+      console.error(err);
       res.writeHead(500, { "Content-Type": "text/plain" });
-      res.end("Failed to generate student registration Excel template");
+      res.end("Failed to generate student records Excel");
     }
     return;
   }
 
-  // ---------------- Upload Student registration file ----------------
+
+// ---------------- Upload Student Records ----------------
 if (pathname === "/upload-files" && req.method === "POST") {
   try {
+//     req.on("aborted", () => {
+//   console.error("❌ REQUEST ABORTED (server restart or client disconnect)");
+// });
+
+// req.on("close", () => {
+//   console.log("ℹ️ Request stream closed");
+// });
 
     // Step 1: Parse multipart/form-data (Busboy MUST be first consumer)
     const { fields, files } = await parseMultipartForm(req, {
@@ -114,8 +97,8 @@ if (pathname === "/upload-files" && req.method === "POST") {
     console.log("[BUSBOY DATA] FILE BUFFER SIZE:", fileBuffer.length);
 
     // Step 4: Parse Excel
-    const students: ParsedStudentRegistration[] =
-      await parseStudentRegistrationExcelFile(fileBuffer);
+    const students: IStudentRecord[] =
+      await parseStudentExcelFile(fileBuffer);
 
     console.log("[PARSED STUDENTS]", students.length);
 
@@ -140,16 +123,13 @@ if (pathname === "/upload-files" && req.method === "POST") {
   return;
 }
 
-
-
-  // ==================================================
-  // NOT FOUND
-  // ==================================================
+  // Default response
   res.writeHead(404, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ message: "Route not found" }));
 });
 
-// --------------------------------------------------
 server.listen(PORT, HOST, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
 });
+
+

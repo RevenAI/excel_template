@@ -42,12 +42,16 @@ class UserController extends BaseController {
 
         if (!_id) throw new AppError(AppError.statusMessage.BAD_REQUEST, 'User ID is required')
         if (!updates || Object.keys(updates).length === 0) {
-            throw new AppError(AppError.statusMessage.UNPROCESSABLE_ENTITY, 'Update data is required')
+            throw new AppError(AppError.statusMessage.UNPROCESSABLE_ENTITY, 'No changes detected for updates')
         }
+
+        const found = await this.fetchById(this.docPath, _id)
+        console.log('FOUND USER', found)
+        
 
         // Ensure _id is included for PUT semantics
         const updated = await this.update(this.docPath, { _id, ...updates })
-        await this._sendResponse(res, { status: AppError.statusMessage.OK, data: updated, message: 'User updated successfully' })
+        await this._sendResponse(res, { status: AppError.statusMessage.OK, data: {updated, found}, message: 'User updated successfully' })
     })
 
     // DELETE /users/:id

@@ -10,9 +10,6 @@ export interface IColumnSchema {
   locked?: boolean;
 }
 
-
-
-
 // ================= ENUM MIRRORS (BACKEND-ALIGNED) =================
 
 export const GENDER_VALUES = [
@@ -28,9 +25,9 @@ export const MARITAL_STATUS_VALUES = [
 ] as const;
 
 // ================= STUDENT REGISTRATION ROW =================
-
 export interface IStudentRegistrationRow {
   // ================= STUDENT (IUser + IStudent) =================
+  _id?: string //student id (for already existing students)
   firstName: string;
   surname: string;
   middleName?: string;
@@ -40,7 +37,6 @@ export interface IStudentRegistrationRow {
   dateOfBirth: string | Date; // supports ISO or DD/MM/YYYY
 
   gender: (typeof GENDER_VALUES)[number];
-  password: string;
   username?: string;
 
   // ================= PARENT (IUser + IParent) =================
@@ -57,8 +53,19 @@ export interface IStudentRegistrationRow {
 
   // ================= SYSTEM / HIDDEN =================
   business: string;
-  classSection: string;
-  department: string;
+  classSection: { //populated section
+    _id: string;
+    sectionName: string;
+  };
+}
+
+// ================= STUDENT REGISTRATION ROW =================
+/**
+ * Result of parsing a single student registration sheet
+ */
+export interface ParsedStudentRegistration {
+  data: IStudentRegistrationRow;
+  isCreating: boolean;
 }
 
 // ================= COLUMN SCHEMA =================
@@ -72,6 +79,8 @@ export interface IStudentRegColumn {
   locked?: boolean;
   validation?: ExcelJS.DataValidation;
 }
+
+export const PARENT_RELATIONSHIP_VALUES = ["Father", "Mother", "Guardian", "Brother", "Sister", "Others"];
 
 export const STUDENT_REG_COLUMNS: IStudentRegColumn[] = [
   // ================= STUDENT =================
@@ -128,20 +137,6 @@ export const STUDENT_REG_COLUMNS: IStudentRegColumn[] = [
       type: "list",
       formulae: [`"${GENDER_VALUES.join(",")}"`],
       allowBlank: false,
-    },
-  },
-
-  {
-    header: "Password",
-    key: "password",
-    required: true,
-    validation: {
-      type: "textLength",
-      operator: "between",
-      formulae: [8, 30],
-      showErrorMessage: true,
-      error:
-        "8–30 chars. Must include uppercase, lowercase, number & symbol",
     },
   },
 
@@ -224,12 +219,6 @@ export const STUDENT_REG_COLUMNS: IStudentRegColumn[] = [
   {
     header: "Class Section ID",
     key: "classSection",
-    hidden: true,
-    locked: true,
-  },
-  {
-    header: "Department ID",
-    key: "department",
     hidden: true,
     locked: true,
   },

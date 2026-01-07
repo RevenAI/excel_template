@@ -31,7 +31,7 @@ export function buildStudentRegistrationSheet(
 
   // Excel limit: max 31 chars
   sheetName = sheetName.substring(0, 31);
-
+  
   const sheet = workbook.addWorksheet(sheetName, {
     properties: { tabColor: { argb: "FF4472C4" } },
   });
@@ -213,29 +213,13 @@ export function buildStudentRegistrationSheet(
 }
 
 /**
- * Generates a complete Excel workbook used for student registration.
+ * Generate a full Excel workbook for student registration
  *
- * This workbook may contain:
- *  - Pre-filled sheets for existing students
- *  - Empty, structured templates for registering new students
- *
- * Each worksheet:
- *  - Has locked and unlocked cells (based on `readOnly`)
- *  - Contains hidden system metadata required for backend processing
- *  - Is designed to be validated again on upload (never trusted blindly)
- *
- * IMPORTANT:
- * - Sheet-level protection controls cell editing
- * - Workbook-level protection (applied elsewhere) must be used to prevent
- *   deleting, renaming, reordering, or adding sheets
- *
- * @param students        Prefilled student records (existing students)
- * @param businessId      Required for empty templates (new students)
- * @param classSectionId  Required for empty templates (new students)
- * @param readOnly        If true, locked cells cannot be edited
- * @param PAGE_COUNT      Number of empty templates to generate (default: 5)
- *
- * @returns Excel workbook as a Buffer
+ * @param students - prefilled student data for existing students
+ * @param businessId - required for new student templates
+ * @param classSectionId - required for new student templates
+ * @param readOnly - protect locked cells
+ * @param PAGE_COUNT - number of empty templates to generate
  */
 export async function generateStudentRegistrationTemplate(
   students: IStudentRegistrationRow[] = [],
@@ -246,39 +230,26 @@ export async function generateStudentRegistrationTemplate(
 ): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook();
 
-  // --------------------------------------------------
-  // Determine how many empty templates to generate
-  // --------------------------------------------------
-  // PAGE_COUNT always wins if provided.
-  // Default is intentionally small to avoid bloated files.
-  const emptyTemplates = PAGE_COUNT;
+  // Determine number of empty templates
+  let emptyTemplates = 0;
+  if (PAGE_COUNT !== undefined) {
+    emptyTemplates = PAGE_COUNT;
+  } else if (students.length > 0) {
+    emptyTemplates = 2;
+  } else {
+    emptyTemplates = 10;
+  }
 
-  // --------------------------------------------------
-  // 1️⃣ Add worksheets for existing students
-  // --------------------------------------------------
-  // These sheets are pre-filled and may include a hidden `_id`
-  // which allows the backend to distinguish updates vs inserts.
+  // 1 Add existing students first
   students.forEach((student) => {
     buildStudentRegistrationSheet(workbook, student, readOnly);
   });
 
-  // --------------------------------------------------
-  // 2️⃣ Add empty templates for new student registrations
-  // --------------------------------------------------
-  // These sheets:
-  // - Contain required business & classSection metadata (hidden)
-  // - Do NOT contain a student `_id`
-  // - Use indexed names to avoid worksheet name collisions
+  // 2 Add empty templates for new students
   for (let i = 0; i < emptyTemplates; i++) {
     const newStudent: IStudentRegistrationRow = {
-      // System metadata (required on upload)
       business: businessId || "",
-      classSection: {
-        _id: classSectionId || "",
-        sectionName: "",
-      },
-
-      // Student information
+      classSection: { _id: classSectionId || "", sectionName: "" },
       firstName: "",
       surname: "",
       middleName: "",
@@ -287,8 +258,6 @@ export async function generateStudentRegistrationTemplate(
       dateOfBirth: "",
       gender: "male",
       username: "",
-
-      // Parent / guardian information
       parentFirstName: "",
       parentSurname: "",
       parentEmail: "",
@@ -299,109 +268,8 @@ export async function generateStudentRegistrationTemplate(
       relationshipWithChildren: "Father",
     };
 
-    buildStudentRegistrationSheet(
-      workbook,
-      newStudent,
-      readOnly,
-      i // ensures unique, deterministic worksheet names
-    );
+    buildStudentRegistrationSheet(workbook, newStudent, readOnly, i);
   }
-
-  // --------------------------------------------------
-  // 🔒 Protect workbook structure
-  // --------------------------------------------------
-  // Prevents:
-  // - Adding new worksheets
-  // - Deleting worksheets
-  // - Renaming worksheets
-  // - Reordering worksheets
-  //
-  // NOTE:
-  // - This does NOT encrypt the file
-  // - This is a structural guard, not security
-  // await workbook.protect("", {
-  //   lockStructure: true,
-  // });
-
-  // --------------------------------------------------
-// 🔒 Protect workbook structure (Excel-native)
-// --------------------------------------------------
-// Prevents:
-// - Adding worksheets
-// - Deleting worksheets
-// - Renaming worksheets
-// - Reordering worksheets
-//
-// NOTE:
-// - This does NOT encrypt the file
-// - This is enforced by Excel UI, not security
-// - File must still be validated on upload
-// (workbook as any).workbookProtection = {
-//   lockStructure: true,
-// };
-
 
   return workbook.xlsx.writeBuffer();
 }
-
-/**
- * Generate a full Excel workbook for student registration
- *
- * @param students - prefilled student data for existing students
- * @param businessId - required for new student templates
- * @param classSectionId - required for new student templates
- * @param readOnly - protect locked cells
- * @param PAGE_COUNT - number of empty templates to generate
- */
-// export async function generateStudentRegistrationTemplate(
-//   students: IStudentRegistrationRow[] = [],
-//   businessId?: string,
-//   classSectionId?: string,
-//   readOnly = false,
-//   PAGE_COUNT: number = 5
-// ): Promise<Buffer> {
-//   const workbook = new ExcelJS.Workbook();
-
-//   // Determine number of empty templates
-//   let emptyTemplates = 0;
-//   if (PAGE_COUNT !== undefined) {
-//     emptyTemplates = PAGE_COUNT;
-//   } else if (students.length > 0) {
-//     emptyTemplates = 2;
-//   } else {
-//     emptyTemplates = 10;
-//   }
-
-//   // 1 Add existing students first
-//   students.forEach((student) => {
-//     buildStudentRegistrationSheet(workbook, student, readOnly);
-//   });
-
-//   // 2 Add empty templates for new students
-//   for (let i = 0; i < emptyTemplates; i++) {
-//     const newStudent: IStudentRegistrationRow = {
-//       business: businessId || "",
-//       classSection: { _id: classSectionId || "", sectionName: "" },
-//       firstName: "",
-//       surname: "",
-//       middleName: "",
-//       email: "",
-//       phone: "",
-//       dateOfBirth: "",
-//       gender: "male",
-//       username: "",
-//       parentFirstName: "",
-//       parentSurname: "",
-//       parentEmail: "",
-//       parentPhone: "",
-//       parentGender: "male",
-//       maritalStatus: "single",
-//       occupation: "",
-//       relationshipWithChildren: "Father",
-//     };
-
-//     buildStudentRegistrationSheet(workbook, newStudent, readOnly, i);
-//   }
-
-//   return workbook.xlsx.writeBuffer();
-// }

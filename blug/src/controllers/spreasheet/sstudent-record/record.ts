@@ -1,122 +1,209 @@
-//import { IStudentRecord, ISubjectRecord, ISubjectScore, IRatingItem, IAffectiveDomain, IPsychomotorSkills } from "./generator.js";
-
-
-import { IAffectiveDomain, IPsychomotorSkills, IStudentRecord, ISubjectRecord, ISubjectScore } from "./build-student-sheet.js";
+import {
+  IAffectiveDomain,
+  IPsychomotorSkills,
+  IStudentRecord,
+  ISubjectRecord,
+  ISubjectScore,
+} from "./build-student-sheet.js";
 
 /**
- * NOTE THAT THIS HELPER IS JUST A MOCK FOR TESTING AND WILL BE REPLACED WITH REAL API
- * IN PRODUCTION
- * Dummy fetch function returning 5 students with subjects, affective & psychomotor items
+ * NOTE:
+ * This is a MOCK data provider for local testing only.
+ * It mirrors the exact IStudentRecord shape used by the Excel builder/parser.
  */
-export async function fetchStudentsFromDB(): Promise<IStudentRecord[]> {
-  const studentNames = ["John Doe", "Jane Smith", "Alice Brown", "Bob Green", "Charlie White"];
-  const subjects = ["Math", "English", "Science", "History", "Geography", "Computer"];
-  const affectiveItems = ["Attendance", "Punctuality", "Responsibility", "Neatness", "Teamwork"];
-  const psychomotorItems = ["Handwriting", "Drawing", "Laboratory Skills", "Craft Skills", "Physical Fitness"];
 
-  const students: IStudentRecord[] = studentNames.map((name, index) => {
-    // --------------------------
-    // Subject Records
-    // --------------------------
-    const subjectRecords: ISubjectRecord[] = subjects.map((sub) => {
+const BUSINESS_ID = "school_001";
+const ACADEMIC_TERM = "2024/2025 - First Term";
+const CLASS_SECTION = {
+  _id: "class_jss2_a",
+  sectionName: "JSS 2A",
+};
+
+export async function fetchStudentsFromDB(): Promise<IStudentRecord[]> {
+  const studentNames = [
+    "John Doe",
+    "Jane Smith",
+    "Alice Brown",
+    "Bob Green",
+    "Charlie White",
+  ];
+
+  const subjects = [
+    "Mathematics",
+    "English",
+    "Science",
+    "History",
+    "Geography",
+    "Computer Studies",
+  ];
+
+  const affectiveItems = [
+    "Attendance",
+    "Punctuality",
+    "Responsibility",
+    "Neatness",
+    "Teamwork",
+  ];
+
+  const psychomotorItems = [
+    "Handwriting",
+    "Drawing",
+    "Laboratory Skills",
+    "Craft Skills",
+    "Physical Fitness",
+  ];
+
+  return studentNames.map((fullName, index): IStudentRecord => {
+    const recordId = `record_${index + 1}`;
+    const studentRefId = `student_${index + 1}`;
+
+    /* --------------------------------------------------
+     * SUBJECT RECORDS
+     * -------------------------------------------------- */
+    const subjectRecords: ISubjectRecord[] = subjects.map((subjectName) => {
       const scores: ISubjectScore[] = [
-        { name: "CA1", value: Math.floor(Math.random() * 21), maxValue: 20 },
-        { name: "CA2", value: Math.floor(Math.random() * 21), maxValue: 20 },
-        { name: "Exam", value: Math.floor(Math.random() * 61), maxValue: 60 },
+        { name: "CA1", value: rand(0, 20), maxValue: 20 },
+        { name: "CA2", value: rand(0, 20), maxValue: 20 },
+        { name: "Exam", value: rand(0, 60), maxValue: 60 },
       ];
-      const totalScore = scores.reduce((acc, s) => acc + s.value, 0);
-      const grade = totalScore >= 75 ? "A1" : totalScore >= 65 ? "B2" : totalScore >= 55 ? "C4" : "D6";
-      return { subjectName: sub, scores, totalScore, grade, remark: "Keep improving" };
+
+      const totalScore = scores.reduce((sum, s) => sum + s.value, 0);
+      const grade = resolveGrade(totalScore);
+
+      return {
+        subjectName,
+        scores,
+        totalScore,
+        grade,
+        remark: "Keep improving",
+      };
     });
 
-    // --------------------------
-    // Affective Domain (with items wrapper)
-    // --------------------------
+    /* --------------------------------------------------
+     * AFFECTIVE DOMAIN
+     * -------------------------------------------------- */
     const affectiveDomain: IAffectiveDomain = {
-      items: affectiveItems.map((item) => {
-        const rating: { rate: number; value: number | null }[] = [1, 2, 3, 4, 5].map((r) => ({
-          rate: r,
-          value: r === Math.ceil(Math.random() * 5) ? r : null,
-        }));
-        return { label: item, rating, remark: "Good" };
-      }),
+      items: affectiveItems.map((label) => ({
+        label,
+        rating: buildRatingScale(5),
+        remark: "Good",
+      })),
     };
 
-    // --------------------------
-    // Psychomotor Skills (with items wrapper)
-    // --------------------------
+    /* --------------------------------------------------
+     * PSYCHOMOTOR SKILLS
+     * -------------------------------------------------- */
     const psychomotorSkills: IPsychomotorSkills = {
-      items: psychomotorItems.map((item) => {
-        const rating: { rate: number; value: number | null }[] = [1, 2, 3, 4, 5].map((r) => ({
-          rate: r,
-          value: r === Math.ceil(Math.random() * 5) ? r : null,
-        }));
-        return { label: item, rating, remark: "Satisfactory" };
-      }),
+      items: psychomotorItems.map((label) => ({
+        label,
+        rating: buildRatingScale(5),
+        remark: "Satisfactory",
+      })),
     };
 
-    // --------------------------
-    // Student Object
-    // --------------------------
+    /* --------------------------------------------------
+     * FINAL STUDENT RECORD
+     * -------------------------------------------------- */
     return {
-      id: (index + 1).toString(),
-      name,
-      class: "JSS 2",
+      _id: recordId,
+
+      business: BUSINESS_ID,
+      academicTerm: ACADEMIC_TERM,
+
+      studentId: {
+        _id: studentRefId,
+        fullName,
+        studentId: `STD-${1000 + index}`,
+      },
+
+      classSection: CLASS_SECTION,
+
       subjectRecords,
       affectiveDomain,
       psychomotorSkills,
+
       commentsAndSignatures: {
         teacherComment: "Keep up the good work",
         headTeacherComment: "Excellent progress",
       },
     };
   });
-
-  return students;
 }
 
-// In-memory mock DB
+/* ======================================================
+ * IN-MEMORY CACHE
+ * ====================================================== */
+
 let STUDENTS_CACHE: IStudentRecord[] = [];
 
 /**
- * Fetch a single student by ID
- * @param studentId 
- * @returns IStudentRecord
+ * Fetch a single student record by record ID
  */
-export async function fetchStudentFromDB(studentId: string): Promise<IStudentRecord> {
-  // Initialize cache if empty
-  if (STUDENTS_CACHE.length === 0) {
+export async function fetchStudentFromDB(
+  recordId: string
+): Promise<IStudentRecord> {
+  if (!STUDENTS_CACHE.length) {
     STUDENTS_CACHE = await fetchStudentsFromDB();
   }
 
-  const student = STUDENTS_CACHE.find(s => s.id === studentId);
+  const student = STUDENTS_CACHE.find((s) => s._id === recordId);
   if (!student) {
-    throw new Error(`Student with ID ${studentId} not found`);
+    throw new Error(`Student record ${recordId} not found`);
   }
 
   return student;
 }
 
 /**
- * Save student grades (mock)
- * @param updatedStudentData IStudentRecord-like JSON from Univer editor
+ * Save student grades (mock persistence)
  */
-export async function saveStudentGrades(updatedStudentData: any): Promise<void> {
-  if (STUDENTS_CACHE.length === 0) {
+export async function saveStudentGrades(
+  updatedRecord: IStudentRecord
+): Promise<void> {
+  if (!STUDENTS_CACHE.length) {
     STUDENTS_CACHE = await fetchStudentsFromDB();
   }
 
-  const index = STUDENTS_CACHE.findIndex(s => s.id === updatedStudentData.id);
+  const index = STUDENTS_CACHE.findIndex(
+    (s) => s._id === updatedRecord._id
+  );
+
   if (index === -1) {
-    throw new Error(`Student with ID ${updatedStudentData.id} not found`);
+    throw new Error(`Student record ${updatedRecord._id} not found`);
   }
 
-  // Merge the updated data into cache
-  STUDENTS_CACHE[index] = {
-    ...STUDENTS_CACHE[index],
-    ...updatedStudentData,
-  };
+  STUDENTS_CACHE[index] = updatedRecord;
 
-  console.log(`Saved grades for student ${updatedStudentData.name}`);
-  // In production, this will be replaced with real DB update logic
+  console.log(
+    `✔ Saved grades for ${updatedRecord.studentId.fullName}`
+  );
+}
+
+/* ======================================================
+ * HELPERS
+ * ====================================================== */
+
+function rand(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function resolveGrade(score: number): string {
+  if (score >= 75) return "A1";
+  if (score >= 65) return "B2";
+  if (score >= 55) return "C4";
+  if (score >= 45) return "C5";
+  if (score >= 40) return "D6";
+  if (score >= 30) return "E7";
+  return "F9";
+}
+
+function buildRatingScale(size: number) {
+  const selected = Math.ceil(Math.random() * size);
+  return Array.from({ length: size }, (_, i) => {
+    const rate = i + 1;
+    return {
+      rate,
+      value: rate === selected ? rate : null,
+    };
+  });
 }

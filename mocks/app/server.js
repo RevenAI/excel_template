@@ -1,51 +1,35 @@
-const { loadEnvFile } = require('node:process')
 const http = require('node:http')
-const dbUtils = require('./utils/db.test')
-const httpUtils = require('./utils/http.test')
 
-loadEnvFile('./.env')
+const userRouter = require('./routes/users.route')
+const productRouter = require('./routes/products.route')
+const { httpTools } = require('./utils/http.helper')
 
-const PORT = process.env.PORT || 3501
+const PORT = Number(process.env.PORT) || 3501
 const HOST = process.env.HOST || '127.0.0.1'
 
 const server = http.createServer(async (req, res) => {
-  try {
-    // parse and attach body
-    req.body = await httpUtils.parseRequestBody(req)
+    // Try routes one by one
+    const handledByUser = await userRouter(req, res)
+    if (handledByUser) return
 
-    // now you can use req.body anywhere
-    console.log('Parsed body:', req.body)
+    const handledByProduct = await productRouter(req, res)
+    if (handledByProduct) return
 
-    res.writeHead(200, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify({ received: req.body }))
-  } catch (err) {
-    res.writeHead(400, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify({ error: err.message }))
-  }
+    // Fallback: route not found
+    // if (res.headersSent) {
+    //     httpTools.sendResponse(res, {
+    //         status: 404,
+    //         message: 'Route not found',
+    //     })
+    // }
+    // res.statusCode = 404
+    // res.setHeader('Content-Type', 'application/json')
+    // res.end(JSON.stringify({
+    //     success: false,
+    //     message: 'Route not found'
+    // }))
 })
 
-
-// const data = {
-//    // _id: 'id-1767057200382',
-//     name: 'Abimbola Fadipe',
-//     age: '18',
-//     career: 'Mechanical ENGINEER',
-//     hobby: 'CODING',
-// }
-
-// async function intiTest() {
-//     try {
-//         const rec = await dbUtils.upsertJsonDoc('model/users/users.json', data)
-//         //const deleted = await dbUtils.deleteById('model/users/users.json', 'id-function now() { [native code] }')
-//         console.log('RECORD FETCHED:', rec)
-//     } catch(err) {
-//         throw new Error(err.message)
-//     }
-// }
-// intiTest()
-
-
-
-server.listen(PORT, HOST, () => {
-    console.log(`Server run on - http://${HOST}:${PORT}`)
+server.listen(PORT, () => {
+    console.log(`Server running on http://${HOST}:${PORT}`)
 })
