@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student ID Card - Front</title>
+</head>
+<body style="margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f5f7fa; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; padding: 20px;">
+    <div style="width: 540px; height: 340px; border-radius: 16px; box-shadow: 0 15px 35px rgba(50, 80, 120, 0.15), 0 5px 15px rgba(0, 0, 0, 0.1); background: linear-gradient(145deg, #ffffff 0%, #f8fafd 100%); position: relative; overflow: hidden;">
+        <!-- Geometric background pattern -->
+        <div style="position: absolute; width: 100%; height: 100%; opacity: 0.03; background-image: radial-gradient(circle at 10% 20%, #2a6bc5 0%, transparent 15%), radial-gradient(circle at 90% 80%, #2a6bc5 0%, transparent 15%), repeating-linear-gradient(45deg, transparent, transparent 10px, #1a4a8f 10px, #1a4a8f 11px); z-index: 0;"></div>
+        
+        <!-- Header section -->
+        <div style="height: 70px; background: linear-gradient(90deg, #1a4a8f 0%, #2a6bc5 100%); display: flex; align-items: center; padding: 0 25px; position: relative;">
+            <!-- School logo -->
+            <div style="height: 48px; width: 48px; background-color: white; border-radius: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
+                {{#if schoolLogo}}
+                    <img src="{{schoolLogo}}" alt="{{schoolName}} Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                {{else}}
+                    <div style="font-size: 18px; color: #2a6bc5; font-weight: bold; padding: 5px;">{{substring schoolName 0 2}}</div>
+                {{/if}}
+            </div>
+            <div style="color: white; font-size: 20px; font-weight: 600; margin-left: 15px; letter-spacing: 0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{schoolName}}</div>
+            <!-- ID badge -->
+            <div style="position: absolute; top: 15px; right: 25px; background-color: rgba(255, 255, 255, 0.2); color: white; font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 12px; letter-spacing: 0.5px; backdrop-filter: blur(5px);">STUDENT ID</div>
+        </div>
+        
+        <!-- Main content -->
+        <div style="display: flex; padding: 25px; position: relative; z-index: 1;">
+            <!-- Photo section -->
+            <div style="width: 120px; margin-right: 25px; display: flex; flex-direction: column; align-items: center;">
+                <div style="width: 120px; height: 150px; background: linear-gradient(145deg, #e6edf7, #ffffff); border-radius: 8px; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); border: 1px solid #eef2f7; position: relative; overflow: hidden;">
+                    <!-- Student photo -->
+                    {{#if passport}}
+                        <img src="{{passport}}" alt="{{fullName}}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {{else}}
+                        <div style="width: 100px; height: 130px; background-color: #e6edf7; border-radius: 4px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                            <div style="width: 40px; height: 40px; background-color: #ffffff; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #2a6bc5; font-size: 20px; margin-bottom: 8px;">
+                                {{#if gender}}
+                                    {{#equals gender "male"}}👨{{else}}👩{{/equals}}
+                                {{else}}
+                                    👤
+                                {{/if}}
+                            </div>
+                            <div style="font-size: 10px; color: #5a7ba7; text-align: center;">STUDENT<br>PHOTO</div>
+                        </div>
+                    {{/if}}
+                </div>
+                <div style="font-size: 12px; color: #5a7ba7; font-weight: 500;">PHOTO</div>
+            </div>
+            
+            <!-- Information section -->
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                <div style="font-size: 26px; font-weight: 600; color: #1a3a6e; margin-bottom: 8px; letter-spacing: 0.3px; line-height: 1.2; word-break: break-word;">{{fullName}}</div>
+                <div style="font-size: 18px; color: #5a7ba7; margin-bottom: 20px; font-weight: 500;">ID: {{studentId}}</div>
+                
+                <!-- Details -->
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div style="display: flex;">
+                        <div style="font-weight: 600; color: #1a3a6e; width: 120px; font-size: 14px;">Program:</div>
+                        <div style="color: #5a7ba7; font-size: 14px;">{{className}}</div>
+                    </div>
+                    {{#if classSection}}
+                    <div style="display: flex;">
+                        <div style="font-weight: 600; color: #1a3a6e; width: 120px; font-size: 14px;">Section:</div>
+                        <div style="color: #5a7ba7; font-size: 14px;">{{classSection}}</div>
+                    </div>
+                    {{/if}}
+                    <div style="display: flex;">
+                        <div style="font-weight: 600; color: #1a3a6e; width: 120px; font-size: 14px;">Email:</div>
+                        <div style="color: #5a7ba7; font-size: 14px; word-break: break-all;">{{email}}</div>
+                    </div>
+                    {{#if guardianPhone}}
+                    <div style="display: flex;">
+                        <div style="font-weight: 600; color: #1a3a6e; width: 120px; font-size: 14px;">Guardian:</div>
+                        <div style="color: #5a7ba7; font-size: 14px;">{{guardianPhone}}</div>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer section -->
+        <div style="height: 60px; background-color: #f8fafd; border-top: 1px solid #eef2f7; display: flex; justify-content: space-between; align-items: center; padding: 0 25px; position: relative; z-index: 1;">
+            <div style="font-size: 14px; color: #5a7ba7;">
+                VALID: {{formatDate dateIssue "MMM D, YYYY"}} - {{formatDate dateDue "MMM D, YYYY"}}
+            </div>
+            <div style="font-style: italic; color: #5a7ba7; font-size: 12px;">
+                {{#if issuedBy}}
+                    Issued by: {{issuedBy}}
+                {{else}}
+                    Registrar's Office
+                {{/if}}
+            </div>
+        </div>
+        
+        <!-- School motto (subtle) -->
+        {{#if motto}}
+        <div style="position: absolute; bottom: 80px; left: 0; width: 100%; text-align: center; font-size: 10px; color: #a0b4d4; font-style: italic; letter-spacing: 0.5px;">
+            "{{motto}}"
+        </div>
+        {{/if}}
+    </div>
+</body>
+</html>
