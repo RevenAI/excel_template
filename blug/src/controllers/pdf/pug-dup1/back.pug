@@ -187,8 +187,8 @@ html(lang="en")
 
         //- QR
         .qr-container
-          if qrDataUrl
-            img(src=qrDataUrl, alt=`QR Code for ${fullName}`)
+          if qrPayload
+            img(src=qrPayload, alt=`QR Code for ${fullName}`)
           else
             .qr-placeholder
               .qr-marker(style="top:8px; left:8px")

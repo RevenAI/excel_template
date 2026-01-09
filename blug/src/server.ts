@@ -1,12 +1,12 @@
 import { loadEnvFile } from "node:process";
 import http, { IncomingMessage, ServerResponse } from "node:http";
 import url from "node:url";
-import fs from "fs/promises"
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { serveHtml } from "./utils/http.js";
-import { imageService } from "./controllers/image/image-service.js"
+import { generateStudentIDCard } from "./controllers/pdf/pdf.tool.js";
+import fs from "node:fs"
 
+// --------------------------------------------------
 loadEnvFile("./src/.env");
 
 // Fix __dirname in ES module
@@ -16,119 +16,80 @@ const __dirname = path.dirname(__filename);
 const HOST = process.env.HOST || "127.0.0.1";
 const PORT = Number(process.env.PORT) || 3501;
 
-const server = http.createServer(async (req: IncomingMessage, res: ServerResponse) => {
+function serveHtml(res: ServerResponse, filePath: string) {
+  fs.readFile(filePath, "utf8", (err, data) => {
+    if (err) {
+      res.writeHead(500, { "Content-Type": "text/plain" });
+      res.end("Error loading page");
+      return;
+    }
+
+    res.writeHead(200, {
+      "Content-Type": "text/html; charset=utf-8",
+      "Cache-Control": "no-store",
+    });
+
+    res.end(data);
+  });
+}
+
+
+// --------------------------------------------------
+const server = http.createServer(async (req, res) => {
   const parsedUrl = url.parse(req.url || "", true);
   const pathname = parsedUrl.pathname || "/";
 
-  // ---------------- Serve HTML Page ----------------
-  if (pathname === "/" || pathname === "/index.html") {
-    await serveHtml(res, path.join(__dirname, "view", "image-page.html"));
-    return;
-  }
+  // ==================================================
+  // SERVE STATIC HTML (TEST UI)
+  // ==================================================
+if (pathname === "/" || pathname === "/index.html") {
+  serveHtml(res, path.join(__dirname, "view", "student-idcard.html"));
+  return;
+}
+if (pathname === "/" || pathname === "/bus1.html") {
+  serveHtml(res, path.join(__dirname, "view", "business/bus1.html"));
+  return;
+}
+if (pathname === "/" || pathname === "/bus2.html") {
+  serveHtml(res, path.join(__dirname, "view", "business/bus2.html"));
+  return;
+}
 
-  // ---------------- Upload Images ----------------
-  if (pathname === "/upload-files" && req.method === "POST") {
-    try {
 
-      const { fields, images } = await imageService.uploadFromRequest(req, {
-        tenant: 'nexalearn',
-        category: 'passport',
-        stableKey: 'abidemi_ademola'
-      });
+  // ==================================================
+// DOWNLOAD STUDENT ID CARD (PDF)
+// ==================================================
+if (pathname === "/download-student-id-card" && req.method === "GET") {
+  try {
+    const { pdfBuffer, idCardService } = await generateStudentIDCard();
 
-       console.log('the image and the fields:', {
-        fields,
-        images,
-       })
+    // Always close Puppeteer resources
+    await idCardService.close();
 
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ fields, images }));
-      return;
-    } catch (err) {
-      console.log('error from image upload:', err)
-      res.writeHead(500, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ error: (err as Error).message }));
-      return;
-    }
-  }
-
-  // ---------------- Rename Image ----------------
-  if (pathname === "/rename-image" && req.method === "POST") {
-    let body = "";
-    req.on("data", chunk => body += chunk);
-    req.on("end", async () => {
-      try {
-        const { tenant, category, oldName, newName } = JSON.parse(body);
-        const success = await imageService.renameImage(tenant, category, oldName, newName);
-        res.writeHead(success ? 200 : 500, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ success }));
-      } catch (err) {
-        res.writeHead(500, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: (err as Error).message }));
-      }
+    res.writeHead(200, {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": 'attachment; filename="student-id-card.pdf"',
+      "Content-Length": pdfBuffer.byteLength,
     });
-    return;
+
+    res.end(pdfBuffer);
+  } catch (err) {
+    console.error("ID card generation failed:", err);
+
+    res.writeHead(500, { "Content-Type": "text/plain" });
+    res.end("Failed to generate student ID card");
   }
+  return;
+}
 
-  // ---------------- Delete Image ----------------
-  if (pathname === "/delete-image" && req.method === "POST") {
-    let body = "";
-    req.on("data", chunk => body += chunk);
-    req.on("end", async () => {
-      try {
-        const { tenant, category, fileName } = JSON.parse(body);
-        const success = await imageService.deleteImage(tenant, category, fileName);
-        res.writeHead(success ? 200 : 500, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ success }));
-      } catch (err) {
-        res.writeHead(500, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: (err as Error).message }));
-      }
-    });
-    return;
-  }
-
-  // ---------------- List Images ----------------
-  if (pathname === "/list-images" && req.method === "GET") {
-    const tenant = parsedUrl.query.tenant as string;
-    const category = parsedUrl.query.category as string;
-
-    try {
-      const images = await imageService.listImages(tenant, category);
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(images));
-    } catch {
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify([]));
-    }
-    return;
-  }
-
-  // ---------------- Serve uploaded images ----------------
-  // This allows browser to fetch images at /uploads/tenant/category/filename
-  if (pathname?.startsWith("/uploads/") && req.method === "GET") {
-    const filePath = path.join(process.cwd(), pathname);
-    try {
-      const data = await fs.readFile(filePath);
-      const ext = path.extname(filePath).toLowerCase();
-      let contentType = "application/octet-stream";
-      if (ext === ".webp") contentType = "image/webp";
-      else if (ext === ".png") contentType = "image/png";
-      else if (ext === ".jpg" || ext === ".jpeg") contentType = "image/jpeg";
-      res.writeHead(200, { "Content-Type": contentType });
-      res.end(data);
-    } catch {
-      res.writeHead(404, { "Content-Type": "text/plain" });
-      res.end("File not found");
-    }
-    return;
-  }
-
-  // ---------------- Default 404 ----------------
+  // ==================================================
+  // NOT FOUND
+  // ==================================================
   res.writeHead(404, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ message: "Route not found" }));
 });
 
+// --------------------------------------------------
 server.listen(PORT, HOST, () => {
   console.log(`Server running on http://${HOST}:${PORT}`);
 });

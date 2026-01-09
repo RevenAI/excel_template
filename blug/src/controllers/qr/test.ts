@@ -16,7 +16,7 @@ export interface StudentQrData {
 export async function testQR(student: StudentQrData) {
  try {
   const qrDataUrl = await QRCodeService.generateDataURL(student);
-  console.log(qrDataUrl); // "data:image/png;base64,..."
+  //console.log(qrDataUrl); // "data:image/png;base64,..."
 
   // Optional: generate buffer if you want to save
   const qrBuffer = await QRCodeService.generateBuffer(student);

@@ -1,9 +1,11 @@
-import fs from "fs/promises";
-import path from "path";
-import { IncomingMessage } from "http";
+import fs from "node:fs/promises";
+import fsSync from "node:fs"
+import path from "node:path";
+import { IncomingMessage } from "node:http";
 import { imageProcessor, ProcessedImageResult, ImageProcessOptions, SafeFileName } from "../../utils/image-processor.js"
 import { getMultipartFormData, UploadedFile } from "../../utils/form-data-parser.js"
 import cryto from 'node:crypto';
+import helpers from "../../utils/helpers.js";
 
 /**
  * Options for uploading images
@@ -125,17 +127,72 @@ async uploadFromRequest(
    * @param category - Image category/folder
    *
    * @returns Array of image paths
-   */
-  async listImages(tenant: string, category: string): Promise<string[]> {
-    const dir = path.join(this.rootDir, tenant, category);
+   */ //OLD AND DEPRECATED VERSION
+  // async listImages(tenant: string, category: string): Promise<string[]> {
+  //   const dir = path.join(this.rootDir, tenant, category);
 
-    try {
-      const files = await fs.readdir(dir);
-      return files.map(file => path.join("/uploads", tenant, category, file).replace(/\\/g, "/"));
-    } catch {
-      return [];
-    }
+  //   try {
+  //     const files = await fs.readdir(dir);
+  //     return files.map(file => path.join("/uploads", tenant, category, file).replace(/\\/g, "/"));
+  //   } catch {
+  //     return [];
+  //   }
+  // }
+
+  /**
+ * Get public URLs for all images in a tenant/category
+ *
+ * Returns an object where each key is the stable key of the image, and the value
+ * is an object with the available variants as properties: { thumb, medium, pdf }.
+ *
+ * Example return:
+ * {
+ *   "nexalearn-logo-abidemi_ademola": {
+ *     thumb: "/uploads/nexalearn/logo/nexalearn-logo-abidemi_ademola-thumb.webp",
+ *     medium: "/uploads/nexalearn/logo/nexalearn-logo-abidemi_ademola-medium.webp",
+ *     pdf: "/uploads/nexalearn/logo/nexalearn-logo-abidemi_ademola-pdf.png"
+ *   }
+ * }
+ *
+ * Usage:
+ * const images = await imageService.listImages("nexalearn", "logo");
+ * console.log(images["nexalearn-logo-abidemi_ademola"].thumb);
+ */
+async listImages(
+  tenant: string,
+  category: string
+): Promise<Record<string, { thumb?: string; medium?: string; pdf?: string }>> {
+  const dir = path.join(this.rootDir, tenant, category);
+
+  try {
+    const files = await fs.readdir(dir);
+
+    const result: Record<string, { thumb?: string; medium?: string; pdf?: string }> = {};
+
+    files.forEach(file => {
+      const ext = path.extname(file); // e.g., ".webp"
+      const name = path.basename(file, ext); // e.g., "nexalearn-logo-abidemi_ademola-thumb"
+
+      // Determine the variant by filename suffix
+      let variant: keyof typeof result[string] | undefined;
+      if (name.endsWith("-thumb")) variant = "thumb";
+      else if (name.endsWith("-medium")) variant = "medium";
+      else if (name.endsWith("-pdf")) variant = "pdf";
+
+      // Remove the variant suffix to get the stable key
+      const stableKey = variant ? name.slice(0, -(`-${variant}`.length)) : name;
+
+      if (!result[stableKey]) result[stableKey] = {};
+      if (variant) {
+        result[stableKey][variant] = path.join("/uploads", tenant, category, file).replace(/\\/g, "/");
+      }
+    });
+
+    return result;
+  } catch {
+    return {};
   }
+}
 
   /**
    * Delete a specific image
@@ -197,6 +254,71 @@ async uploadFromRequest(
       return null;
     }
   }
+
+  /**
+ * Read an image and return a Data URL for embedding in HTML/PDF.
+ *
+ * Example output:
+ * "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA..."
+ *
+ * @param tenant - Tenant name
+ * @param category - Image category/folder
+ * @param fileName - Filename of the image
+ *
+ * @returns Data URL string or null if file does not exist
+ *
+ * @example
+ * const dataUrl = await imageService.readImageDataUrl("nexalearn", "logo", "logo-thumb.webp");
+ * html += `<img src="${dataUrl}" alt="Logo" />`;
+ */
+async readImageDataUrl(
+  tenant: string,
+  category: string,
+  fileName: string
+): Promise<string | null> {
+  const filePath = path.join(this.rootDir, tenant, category, fileName);
+
+  try {
+    const buffer = await fs.readFile(filePath);
+    const ext = path.extname(fileName).slice(1); // remove the dot, e.g., "png", "webp"
+    const mimeType = ext === "jpg" ? "jpeg" : ext; // normalize jpg → jpeg
+    const base64 = buffer.toString("base64");
+    return `data:image/${mimeType};base64,${base64}`;
+  } catch (err) {
+    console.error(`[ImageService] Failed to read image for Data URL: ${filePath}`, err);
+    return null;
+  }
+}
+
+  /**
+   * 
+   * @param tenant 
+   * @param category 
+   * @param fileName 
+   * @returns 
+   */
+  async readImageStream(
+  tenant: string,
+  category: string,
+  fileName: string
+): Promise<NodeJS.ReadableStream | null> {
+  const filePath = path.join(this.rootDir, tenant, category, fileName);
+
+  try {
+    await helpers.createDirIfNotExists(this.rootDir)
+    const stream = await fsSync.createReadStream(filePath);
+    stream.on("error", err => {
+      console.error("Image stream failed", { filePath, err });
+    });
+
+    stream.on("end", () => {
+      console.info("Image streamed successfully", { filePath });
+    });
+    return stream
+  } catch {
+    return null;
+  }
+}
 
   /**
    * Get absolute path for an image

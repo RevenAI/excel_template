@@ -30,132 +30,36 @@ html(lang="en")
         overflow: hidden;
       }
 
-      .background-pattern {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        opacity: 0.03;
-        z-index: 0;
+      .background-pattern { position: absolute; width: 100%; height: 100%; opacity: 0.03; z-index: 0;
         background-image: radial-gradient(circle at 10% 20%, #2a6bc5 0%, transparent 15%),
                           radial-gradient(circle at 90% 80%, #2a6bc5 0%, transparent 15%),
                           repeating-linear-gradient(45deg, transparent, transparent 10px, #1a4a8f 10px, #1a4a8f 11px);
       }
 
-      .header {
-        height: 70px;
-        display: flex;
-        align-items: center;
-        padding: 0 25px;
-        position: relative;
-        z-index: 1;
-        background: linear-gradient(90deg, #1a4a8f 0%, #2a6bc5 100%);
-      }
+      .header { height: 70px; background: linear-gradient(90deg, #1a4a8f 0%, #2a6bc5 100%); display: flex; align-items: center; padding: 0 25px; position: relative; z-index: 1; }
 
-      .school-logo {
-        height: 48px;
-        width: 48px;
-        background-color: white;
-        border-radius: 8px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        overflow: hidden;
-      }
+      .school-logo { height: 48px; width: 48px; background-color: white; border-radius: 8px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
 
-      .school-info {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        margin-left: 15px;
-        overflow: hidden;
-      }
+      .school-name { color: white; font-size: 20px; font-weight: 600; margin-left: 15px; letter-spacing: 0.5px; line-height: 1.2; word-break: break-word; }
 
-      .school-name {
-        color: white;
-        font-size: 18px;
-        font-weight: 600;
-        line-height: 1.2;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
+      .school-motto { color: white; font-size: 10px; margin-left: 15px; line-height: 1.1; font-style: italic; opacity: 0.9; }
 
-      .school-motto, .school-address {
-        color: white;
-        font-size: 10px;
-        line-height: 1.1;
-        opacity: 0.9;
-      }
+      .school-address { color: white; font-size: 10px; margin-left: 15px; line-height: 1.1; opacity: 0.9; }
 
-      .school-motto { font-style: italic; }
-
-      .student-id-badge {
-        position: absolute;
-        top: 15px;
-        right: 25px;
-        background-color: rgba(255,255,255,0.2);
-        color: white;
-        font-size: 10px;
-        font-weight: 600;
-        padding: 4px 10px;
-        border-radius: 12px;
-        letter-spacing: 0.5px;
-        backdrop-filter: blur(5px);
-      }
+      .student-id-badge { position: absolute; top: 15px; right: 25px; background-color: rgba(255, 255, 255, 0.2); color: white; font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 12px; letter-spacing: 0.5px; backdrop-filter: blur(5px); }
 
       .photo-container, .qr-container { flex: 0 0 auto; }
       .photo-container img, .qr-container img { width: 100%; height: 100%; object-fit: cover; }
 
-      .photo-placeholder {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        width: 120px;
-        height: 150px;
-        background-color: #e6edf7;
-        border-radius: 8px;
-      }
+      .photo-placeholder { display: flex; flex-direction: column; justify-content: center; align-items: center; width: 120px; height: 150px; background-color: #e6edf7; border-radius: 8px; }
+      .photo-placeholder .icon { width: 40px; height: 40px; border-radius: 50%; background-color: #ffffff; display: flex; justify-content: center; align-items: center; font-size: 20px; color: #2a6bc5; margin-bottom: 8px; }
 
-      .photo-placeholder .icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: #ffffff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 20px;
-        color: #2a6bc5;
-        margin-bottom: 8px;
-      }
+      .info-label { font-weight: 600; color: #1a3a6e; width: 120px; font-size: 14px; }
+      .info-value { color: #5a7ba7; font-size: 14px; word-break: break-word; }
 
-      .info-label {
-        font-weight: 600;
-        color: #1a3a6e;
-        width: 120px;
-        font-size: 14px;
-      }
+      .footer { height: 60px; background-color: #f8fafd; border-top: 1px solid #eef2f7; display: flex; justify-content: space-between; align-items: center; padding: 0 25px; position: relative; z-index: 1; font-size: 12px; color: #5a7ba7; }
 
-      .info-value {
-        color: #5a7ba7;
-        font-size: 14px;
-        word-break: break-word;
-      }
-
-      .footer {
-        height: 60px;
-        background-color: #f8fafd;
-        border-top: 1px solid #eef2f7;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 25px;
-        position: relative;
-        z-index: 1;
-        font-size: 12px;
-        color: #5a7ba7;
-      }
+      .motto { position: absolute; bottom: 80px; left: 0; width: 100%; text-align: center; font-size: 10px; color: #a0b4d4; font-style: italic; letter-spacing: 0.5px; }
 
   body
     .card
@@ -169,14 +73,9 @@ html(lang="en")
           else
             - const schoolInitials = schoolName ? schoolName.substring(0, 2).toUpperCase() : 'SC'
             div(style="font-size: 18px; color: #2a6bc5; font-weight: bold; padding: 5px;")= schoolInitials
-
-        .school-info
-          .school-name= schoolName
-          if motto
-            .school-motto= motto
-          if address
-            .school-address= address
-
+        .school-name= schoolName
+        .school-motto= motto
+        .school-address= address
         .student-id-badge STUDENT ID
 
       //- Main content

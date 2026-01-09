@@ -6,21 +6,19 @@ import path from "node:path";
 import { PDFDocument } from "pdf-lib";
 import { PDFPage } from "pdf-lib";
 import pugService from "../templating/pug.service.js";
-import helpers from "../../utils/helpers.js";
-import { imageService } from "../image/image-service.js";
 
 export interface StudentIdCardData {
   _id: string;
   studentId: string;
+  qrPayload: string;
 
   fullName: string;
   email: string;
   passport: string;
-  gender: "male" | "female";
-  bloodGroup: string
+  gender?: "male" | "female";
 
-  //className: string;
-  classSection: string;
+  className: string;
+  classSection?: string;
 
   schoolName: string;
   schoolLogo: string;
@@ -90,7 +88,7 @@ export class StudentIDCardService {
   const combined = await this.combinePdfPages(...pdfs);
 
   if (outputPath) {
-    await helpers.createDirIfNotExists(path.dirname(outputPath))
+    await fs.mkdir(path.dirname(outputPath), { recursive: true });
     await fs.writeFile(outputPath, combined);
   }
 
@@ -109,7 +107,7 @@ private async getFrontHtml(
   qrDataUrl?: string
 ): Promise<string> {
   // Pass everything to the pug template
-  await helpers.createDirIfNotExists(this.templateDir);
+  await this.createDirIfNotExists(this.templateDir);
   return pugService.renderFile(
     path.join(this.templateDir, "front.pug"), // pug template file
     {
@@ -138,7 +136,7 @@ private async getBackHtml(
     return null; // skip back if nothing to render
   }
 
-  await helpers.createDirIfNotExists(this.templateDir);
+  await this.createDirIfNotExists(this.templateDir);
   return pugService.renderFile(
     path.join(this.templateDir, "back.pug"),
     {
@@ -149,6 +147,14 @@ private async getBackHtml(
       formatDate: this.formatDate.bind(this),
     }
   );
+}
+
+private async createDirIfNotExists(dir: string) {
+  try {
+    await fs.access(dir, fs.constants.F_OK);
+  } catch {
+    await fs.mkdir(dir, { recursive: true });
+  }
 }
 
   // =========================
@@ -166,155 +172,7 @@ private async getBackHtml(
  * Expected usage:
  *   combinePdfPages(frontPdf)
  *   combinePdfPages(frontPdf, backPdf)
- */ //ORIGINAL VERSION FOR PRODUCTION WITH MORRORING
-// private async combinePdfPages(
-//   ...buffers: Buffer[]
-// ): Promise<Buffer> {
-//   // Safety check: at least one PDF (front card) is required
-//   if (buffers.length === 0) {
-//     throw new Error("At least one PDF buffer is required");
-//   }
-
-//   // Create the output PDF document
-//   const pdf = await PDFDocument.create();
-
-//   // Load the first page to determine card dimensions
-//   // (All cards are assumed to be the same size)
-//   const frontDoc = await PDFDocument.load(buffers[0]);
-//   const frontPage = frontDoc.getPage(0);
-
-//   const cardWidth = frontPage.getWidth();
-//   const cardHeight = frontPage.getHeight();
-
-//   // Print layout configuration
-//   const bleed = 12;    // Extra background for safe cutting (~3mm)
-//   const padding = 30;  // Outer page margin (breathing space)
-//   const gap = 20;      // Space between cards
-
-//   // Calculate final page size to fit all cards horizontally
-//   const pageWidth =
-//     padding * 2 +
-//     cardWidth * buffers.length +
-//     gap * (buffers.length - 1) +
-//     bleed * 2;
-
-//   const pageHeight =
-//     padding * 2 + cardHeight + bleed * 2;
-
-//   // Create the output page
-//   const page = pdf.addPage([pageWidth, pageHeight]);
-
-//   // Vertically center the cards for visual balance
-//   const centerY = (pageHeight - cardHeight) / 2;
-
-//   // Initial horizontal position
-//   let x = padding + bleed;
-
-//   // Render each card
-//   for (let i = 0; i < buffers.length; i++) {
-//     // Load the current card PDF
-//     const doc = await PDFDocument.load(buffers[i]);
-//     const pageToEmbed = doc.getPage(0);
-
-//     // Embed the page so it can be drawn onto the output page
-//     const [embed] = await pdf.embedPages([pageToEmbed]);
-
-//     page.drawPage(embed, {
-//       // Back card is drawn mirrored (negative width)
-//       // to ensure correct alignment after physical paper flip
-//       x: i === 1 ? x + cardWidth : x,
-//       y: centerY,
-//       width: i === 1 ? -cardWidth : cardWidth,
-//       height: cardHeight,
-//     });
-
-//     // Draw crop/cut marks to guide trimming after printing
-//     this.drawCutMarks(page, x, centerY, cardWidth, cardHeight);
-
-//     // Move horizontal position for the next card
-//     x += cardWidth + gap;
-//   }
-
-//   // Serialize the PDF and return it as a Buffer
-//   return Buffer.from(await pdf.save());
-// }
-
-//TEST VERSION - ONLY MIRROR THE SECOND CARD
-// private async combinePdfPages(
-//   ...buffers: Buffer[]
-// ): Promise<Buffer> {
-//   // Safety check: at least one PDF (front card) is required
-//   if (buffers.length === 0) {
-//     throw new Error("At least one PDF buffer is required");
-//   }
-
-//   // Create the output PDF document
-//   const pdf = await PDFDocument.create();
-
-//   // Load the first page to determine card dimensions
-//   // (All cards are assumed to be the same size)
-//   const frontDoc = await PDFDocument.load(buffers[0]);
-//   const frontPage = frontDoc.getPage(0);
-
-//   const cardWidth = frontPage.getWidth();
-//   const cardHeight = frontPage.getHeight();
-
-//   // Print layout configuration
-//   const bleed = 12;    // Extra background for safe cutting (~3mm)
-//   const padding = 30;  // Outer page margin (breathing space)
-//   const gap = 20;      // Space between cards
-
-//   // Calculate final page size to fit all cards horizontally
-//   const pageWidth =
-//     padding * 2 +
-//     cardWidth * buffers.length +
-//     gap * (buffers.length - 1) +
-//     bleed * 2;
-
-//   const pageHeight =
-//     padding * 2 + cardHeight + bleed * 2;
-
-//   // Create the output page
-//   const page = pdf.addPage([pageWidth, pageHeight]);
-
-//   // Vertically center the cards for visual balance
-//   const centerY = (pageHeight - cardHeight) / 2;
-
-//   // Initial horizontal position
-//   let x = padding + bleed;
-
-//   // Render each card
-//   for (let i = 0; i < buffers.length; i++) {
-//     // Load the current card PDF
-//     const doc = await PDFDocument.load(buffers[i]);
-//     const pageToEmbed = doc.getPage(0);
-
-//     // Embed the page so it can be drawn onto the output page
-//     const [embed] = await pdf.embedPages([pageToEmbed]);
-
-//     // Always mirror the second card (back card) for duplex printing
-//     // This ensures correct orientation when physically flipping the paper
-//     const isBackCard = i === 1;
-    
-//     page.drawPage(embed, {
-//       x: isBackCard ? x + cardWidth : x,
-//       y: centerY,
-//       width: isBackCard ? -cardWidth : cardWidth,
-//       height: cardHeight,
-//     });
-
-//     // Draw crop/cut marks to guide trimming after printing
-//     this.drawCutMarks(page, x, centerY, cardWidth, cardHeight);
-
-//     // Move horizontal position for the next card
-//     x += cardWidth + gap;
-//   }
-
-//   // Serialize the PDF and return it as a Buffer
-//   return Buffer.from(await pdf.save());
-// }
-
-//TEST VERSION - NO MIRROR AT ALL - NOT EVEN FOR THE SECOND CARD
+ */
 private async combinePdfPages(
   ...buffers: Buffer[]
 ): Promise<Buffer> {
@@ -367,11 +225,12 @@ private async combinePdfPages(
     // Embed the page so it can be drawn onto the output page
     const [embed] = await pdf.embedPages([pageToEmbed]);
 
-    // Draw each card normally without any mirroring
     page.drawPage(embed, {
-      x: x,
+      // Back card is drawn mirrored (negative width)
+      // to ensure correct alignment after physical paper flip
+      x: i === 1 ? x + cardWidth : x,
       y: centerY,
-      width: cardWidth,
+      width: i === 1 ? -cardWidth : cardWidth,
       height: cardHeight,
     });
 
@@ -385,8 +244,6 @@ private async combinePdfPages(
   // Serialize the PDF and return it as a Buffer
   return Buffer.from(await pdf.save());
 }
-
-
 
 private drawCutMarks(
   page: PDFPage,
@@ -433,34 +290,22 @@ private drawCutMarks(
     await PuppeteerService.shutdown();
   }
 
-
   //for testing
-private getDummyPassport = async () => {
-  const passport = await imageService.readImageDataUrl('nexalearn', 'passport', 'nexalearn-passport-abidemi_ademola-1767950650188-9296cd34d7df-thumb.webp')
-  return passport
-}
-
-private getDummyLogo = async () => {
-  const logo = await imageService.readImageDataUrl('nexalearn', 'logo', 'nexalearn-logo-abidemi_ademola-1767972388956-ee184b9b904b-thumb.webp')
-  return logo
-}
-
-public async getDummyStudentIdCardData(): Promise<StudentIdCardData> {
-  return {
+readonly dummyStudentIdCardData: StudentIdCardData = {
   _id: "64b7f1c8a2d3e5f1b0a12345",
   studentId: "STU2026001",
+  qrPayload: "https://school-portal.com/student/STU2026001",
 
   fullName: "Adebayo Tunde",
   email: "adebayo.tunde@example.com",
-  passport: await this.getDummyPassport(),
+  passport: "https://randomuser.me/api/portraits/men/75.jpg",
   gender: "male",
-  bloodGroup: 'O+',
 
-  //className: "Senior Secondary 2",
-  classSection: "SS 1",
+  className: "Senior Secondary 2",
+  classSection: "B",
 
   schoolName: "Greenfield International School",
-  schoolLogo: await this.getDummyLogo(),
+  schoolLogo: "https://example.com/assets/school-logo.png",
   motto: "Knowledge, Integrity, Excellence",
   address: "123 Elm Street, Lagos, Nigeria",
 
@@ -471,7 +316,5 @@ public async getDummyStudentIdCardData(): Promise<StudentIdCardData> {
   issuedBy: "Mrs. Folake Adeyemi",
   signature: "https://example.com/assets/signature.png"
 };
-} 
 
 }
-
