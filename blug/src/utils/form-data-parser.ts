@@ -4,21 +4,46 @@ import path from "node:path";
 import os from "node:os";
 import type { IncomingMessage } from "node:http";
 
+
+
+/**
+ * Represents a single uploaded file.
+ */
 export interface UploadedFile {
+  /** Field name in the form */
   fieldname: string;
+  /** Original filename provided by client */
   originalFilename: string;
+  /** Encoding type (utf-8, binary, etc.) */
   encoding: string;
+  /** MIME type of the file */
   mimetype: string;
+  /** Absolute path to the file on disk */
   filepath: string;
+  /** File size in bytes */
   size: number;
 }
 
+/**
+ * Configuration options for multipart parsing.
+ */
 interface ParseOptions {
+  /** Maximum size per file in bytes */
   fileSizeLimit?: number;
+  /** Maximum number of files allowed in request */
   filesLimit?: number;
+  /** Maximum number of fields allowed in request */
   fieldsLimit?: number;
 }
 
+/**
+ * Parses a multipart/form-data request using Busboy.
+ *
+ * @param req - HTTP IncomingMessage
+ * @param options - Optional parsing limits
+ *
+ * @returns Object containing parsed fields and uploaded files
+ */
 export function parseMultipartForm(
   req: IncomingMessage,
   options: ParseOptions = {}
@@ -28,7 +53,7 @@ export function parseMultipartForm(
 }> {
   return new Promise((resolve, reject) => {
     const fields: Record<string, string> = {};
-    const files: Record<string, UploadedFile[]> = [];
+    const files: Record<string, UploadedFile[]> = {};
 
     const contentType = req.headers["content-type"];
     if (!contentType || !contentType.includes("multipart/form-data")) {
@@ -99,7 +124,7 @@ export function parseMultipartForm(
     bb.on("error", reject);
 
     bb.on("close", async () => {
-      // ✅ Wait for all files to finish writing
+      //Wait for all files to finish writing
       try {
         await Promise.all(fileWritePromises);
         resolve({ fields, files });
@@ -109,5 +134,37 @@ export function parseMultipartForm(
     });
 
     req.pipe(bb);
+  });
+}
+
+/**
+ * Rich wrapper for multipart/form-data parsing.
+ *
+ * Provides defaults and convenient configuration.
+ *
+ * @param req - HTTP IncomingMessage
+ * @param fileSizeMB - Maximum allowed size per file in MB (default: 5)
+ * @param filesLimit - Maximum number of files (default: 5)
+ * @param fieldsLimit - Maximum number of fields (default: 20)
+ *
+ * @example
+ * ```ts
+ * const { fields, files } = await getMultipartFormData(req);
+ * console.log(fields);
+ * console.log(files["profilePhoto"]);
+ * ```
+ *
+ * @returns Parsed fields and uploaded files
+ */
+export async function getMultipartFormData(
+  req: IncomingMessage,
+  fileSizeMB: number = 5,
+  filesLimit: number = 5,
+  fieldsLimit: number = 20
+) {
+  return parseMultipartForm(req, {
+    fileSizeLimit: fileSizeMB * 1024 * 1024,
+    filesLimit,
+    fieldsLimit,
   });
 }

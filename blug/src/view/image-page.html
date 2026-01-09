@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Service Test</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; }
+    input, button { margin: 0.5rem 0; display: block; }
+    .image-list img { max-width: 150px; margin: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h1>Image Service Test Page</h1>
+
+  <!-- Upload -->
+  <h2>Upload Image</h2>
+  <input type="text" id="tenant" placeholder="Tenant Name">
+  <input type="text" id="category" placeholder="Category">
+  <input type="file" id="file" multiple>
+  <button onclick="uploadImage()">Upload</button>
+
+  <!-- Rename -->
+  <h2>Rename Image</h2>
+  <input type="text" id="oldName" placeholder="Old Filename">
+  <input type="text" id="newName" placeholder="New Filename">
+  <input type="text" id="renameTenant" placeholder="Tenant Name">
+  <input type="text" id="renameCategory" placeholder="Category">
+  <button onclick="renameImage()">Rename</button>
+
+  <!-- Delete -->
+  <h2>Delete Image</h2>
+  <input type="text" id="deleteName" placeholder="Filename">
+  <input type="text" id="deleteTenant" placeholder="Tenant Name">
+  <input type="text" id="deleteCategory" placeholder="Category">
+  <button onclick="deleteImage()">Delete</button>
+
+  <!-- List -->
+  <h2>List Images</h2>
+  <input type="text" id="listTenant" placeholder="Tenant Name">
+  <input type="text" id="listCategory" placeholder="Category">
+  <button onclick="listImages()">List</button>
+  <div class="image-list" id="imageList"></div>
+
+  <script>
+    async function uploadImage() {
+      const tenant = document.getElementById("tenant").value;
+      const category = document.getElementById("category").value;
+      const files = document.getElementById("file").files;
+
+      const formData = new FormData();
+      for (const file of files) {
+        formData.append("file", file);
+      }
+      formData.append("tenant", tenant);
+      formData.append("category", category);
+
+      const res = await fetch("/upload-files", { method: "POST", body: formData });
+      const data = await res.json();
+      alert(JSON.stringify(data, null, 2));
+    }
+
+    async function renameImage() {
+      const oldName = document.getElementById("oldName").value;
+      const newName = document.getElementById("newName").value;
+      const tenant = document.getElementById("renameTenant").value;
+      const category = document.getElementById("renameCategory").value;
+
+      const res = await fetch("/rename-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tenant, category, oldName, newName })
+      });
+      const data = await res.json();
+      alert(JSON.stringify(data, null, 2));
+    }
+
+    async function deleteImage() {
+      const name = document.getElementById("deleteName").value;
+      const tenant = document.getElementById("deleteTenant").value;
+      const category = document.getElementById("deleteCategory").value;
+
+      const res = await fetch("/delete-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tenant, category, fileName: name })
+      });
+      const data = await res.json();
+      alert(JSON.stringify(data, null, 2));
+    }
+
+    async function listImages() {
+      const tenant = document.getElementById("listTenant").value;
+      const category = document.getElementById("listCategory").value;
+
+      const res = await fetch(`/list-images?tenant=${tenant}&category=${category}`);
+      const data = await res.json();
+
+      const container = document.getElementById("imageList");
+      container.innerHTML = "";
+      for (const imgPath of data) {
+        const img = document.createElement("img");
+        img.src = imgPath;
+        container.appendChild(img);
+      }
+    }
+  </script>
+</body>
+</html>

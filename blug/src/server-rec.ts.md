@@ -63,13 +63,6 @@ const server = http.createServer(async (req, res) => {
 // ---------------- Upload Student Records ----------------
 if (pathname === "/upload-files" && req.method === "POST") {
   try {
-//     req.on("aborted", () => {
-//   console.error("❌ REQUEST ABORTED (server restart or client disconnect)");
-// });
-
-// req.on("close", () => {
-//   console.log("ℹ️ Request stream closed");
-// });
 
     // Step 1: Parse multipart/form-data (Busboy MUST be first consumer)
     const { fields, files } = await parseMultipartForm(req, {
