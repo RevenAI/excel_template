@@ -83,6 +83,3 @@ export class PugService {
 
 // Singleton instance for general use
 export default new PugService();
-
-// Replace CompileOptions → pug.Options
-// Use pug.TemplateFunction for the compiled function type.

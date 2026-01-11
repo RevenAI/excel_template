@@ -51,6 +51,13 @@ export class StudentIDCardService {
   // =========================
   // PUBLIC API
   // =========================
+  /**
+   * 
+   * @param data 
+   * @param outputPath 
+   * @param options 
+   * @returns 
+   */
  public async generateIdCard(
   data: StudentIdCardData,
   outputPath?: string,
@@ -95,7 +102,7 @@ export class StudentIDCardService {
   }
 
   return combined;
-}
+ }
 
   // =========================
   // TEMPLATE RENDERING
@@ -315,6 +322,11 @@ private async getBackHtml(
 // }
 
 //TEST VERSION - NO MIRROR AT ALL - NOT EVEN FOR THE SECOND CARD
+/**
+ * 
+ * @param buffers 
+ * @returns 
+ */
 private async combinePdfPages(
   ...buffers: Buffer[]
 ): Promise<Buffer> {
@@ -387,7 +399,14 @@ private async combinePdfPages(
 }
 
 
-
+/**
+ * 
+ * @param page 
+ * @param x 
+ * @param y 
+ * @param w 
+ * @param h 
+ */
 private drawCutMarks(
   page: PDFPage,
   x: number,
@@ -418,6 +437,11 @@ private drawCutMarks(
   // =========================
   // HELPERS
   // =========================
+  /**
+   * 
+   * @param dateDue 
+   * @returns 
+   */
   private isExpiringSoon(dateDue: string | Date): boolean {
     const due = new Date(dateDue);
     const today = new Date();
@@ -425,10 +449,18 @@ private drawCutMarks(
     return days <= 30;
   }
 
+  /**
+   * 
+   * @param date 
+   * @returns 
+   */
   private formatDate(date: string | Date): string {
     return new Intl.DateTimeFormat("en-GB").format(new Date(date));
   }
 
+  /**
+   * 
+   */
   public async close() {
     await PuppeteerService.shutdown();
   }

@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Report Card - Nigerian Secondary School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Variables for Colors */
+        :root {
+            --nigerian-green: #008751;
+            --nigerian-green-dark: #005732;
+            --nigerian-yellow: #e5ae0c;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --white: #ffffff;
+            --blue-100: #dbeafe;
+            --blue-500: #3b82f6;
+            --blue-600: #2563eb;
+            --green-100: #d1fae5;
+            --green-500: #10b981;
+            --green-600: #059669;
+            --green-700: #047857;
+            --amber-100: #fef3c7;
+            --amber-500: #f59e0b;
+            --amber-600: #d97706;
+            --purple-100: #f3e8ff;
+            --purple-500: #8b5cf6;
+            --purple-600: #7c3aed;
+            --orange-50: #fff7ed;
+            --orange-100: #ffedd5;
+            --cyan-50: #ecfeff;
+            --blue-50: #eff6ff;
+            --emerald-50: #ecfdf5;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+        }
+
+        /* Base Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--gray-100);
+            padding: 20px;
+            color: var(--gray-800);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.5;
+        }
+
+        /* Utility Classes */
+        .no-print {
+            display: block;
+        }
+
+        .print-optimized {
+            font-size: 11px;
+        }
+
+        .no-break {
+            page-break-inside: avoid;
+        }
+
+        /* Layout */
+        .report-card-container {
+            max-width: 64rem;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 16px;
+        }
+
+        .report-card {
+            background-color: var(--white);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .mr-2 {
+            margin-right: 0.5rem;
+        }
+
+        .mr-3 {
+            margin-right: 0.75rem;
+        }
+
+        .ml-6 {
+            margin-left: 1.5rem;
+        }
+
+        .p-2 {
+            padding: 0.5rem;
+        }
+
+        .p-3 {
+            padding: 0.75rem;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .p-5 {
+            padding: 1.25rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .pt-0 {
+            padding-top: 0;
+        }
+
+        .pt-2 {
+            padding-top: 0.5rem;
+        }
+
+        .pb-2 {
+            padding-bottom: 0.5rem;
+        }
+
+        .pl-6 {
+            padding-left: 1.5rem;
+        }
+
+        .py-4 {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        /* Flexbox */
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .md-flex-row {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .flex-1 {
+            flex: 1;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: 1fr;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .gap-6 {
+            gap: 1.5rem;
+        }
+
+        .space-y-3 > * + * {
+            margin-top: 0.75rem;
+        }
+
+        /* Typography */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-xs {
+            font-size: 0.75rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .text-lg {
+            font-size: 1.125rem;
+        }
+
+        .text-xl {
+            font-size: 1.25rem;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+
+        .text-3xl {
+            font-size: 1.875rem;
+        }
+
+        .text-4xl {
+            font-size: 2.25rem;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        .text-white {
+            color: var(--white);
+        }
+
+        .text-gray-500 {
+            color: var(--gray-500);
+        }
+
+        .text-gray-600 {
+            color: var(--gray-600);
+        }
+
+        .text-gray-700 {
+            color: var(--gray-700);
+        }
+
+        .text-nigerian-green-dark {
+            color: var(--nigerian-green-dark);
+        }
+
+        .text-green-700 {
+            color: var(--green-700);
+        }
+
+        .text-amber-700 {
+            color: var(--amber-600);
+        }
+
+        .text-blue-700 {
+            color: var(--blue-600);
+        }
+
+        .text-green-500 {
+            color: var(--green-500);
+        }
+
+        .text-amber-500 {
+            color: var(--amber-500);
+        }
+
+        .text-blue-500 {
+            color: var(--blue-500);
+        }
+
+        .text-purple-600 {
+            color: var(--purple-600);
+        }
+
+        .text-blue-600 {
+            color: var(--blue-600);
+        }
+
+        .opacity-90 {
+            opacity: 0.9;
+        }
+
+        /* Background Colors */
+        .bg-white {
+            background-color: var(--white);
+        }
+
+        .bg-gray-50 {
+            background-color: var(--gray-50);
+        }
+
+        .bg-gray-100 {
+            background-color: var(--gray-100);
+        }
+
+        .bg-nigerian-green {
+            background-color: var(--nigerian-green);
+        }
+
+        .bg-green-500 {
+            background-color: var(--green-500);
+        }
+
+        .bg-amber-500 {
+            background-color: var(--amber-500);
+        }
+
+        .bg-blue-500 {
+            background-color: var(--blue-500);
+        }
+
+        .bg-green-100 {
+            background-color: var(--green-100);
+        }
+
+        .bg-blue-100 {
+            background-color: var(--blue-100);
+        }
+
+        .bg-purple-100 {
+            background-color: var(--purple-100);
+        }
+
+        .bg-amber-100 {
+            background-color: var(--amber-100);
+        }
+
+        .bg-gray-200 {
+            background-color: var(--gray-200);
+        }
+
+        /* Gradients */
+        .bg-gradient-to-r {
+            background-image: linear-gradient(to right, var(--nigerian-green), var(--nigerian-green-dark));
+        }
+
+        .from-nigerian-green {
+            /* Part of gradient definition */
+        }
+
+        .to-nigerian-green-dark {
+            /* Part of gradient definition */
+        }
+
+        .from-green-50 {
+            background-image: linear-gradient(to right, var(--emerald-50), var(--emerald-50));
+        }
+
+        .to-emerald-50 {
+            /* Part of gradient definition */
+        }
+
+        .from-amber-50 {
+            background-image: linear-gradient(to right, var(--orange-50), var(--orange-100));
+        }
+
+        .to-orange-50 {
+            /* Part of gradient definition */
+        }
+
+        .from-blue-50 {
+            background-image: linear-gradient(to right, var(--blue-50), var(--cyan-50));
+        }
+
+        .to-cyan-50 {
+            /* Part of gradient definition */
+        }
+
+        /* Borders */
+        .border {
+            border-width: 1px;
+            border-style: solid;
+        }
+
+        .border-2 {
+            border-width: 2px;
+        }
+
+        .border-4 {
+            border-width: 4px;
+        }
+
+        .border-b {
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+        }
+
+        .border-t {
+            border-top-width: 1px;
+            border-top-style: solid;
+        }
+
+        .border-b-4 {
+            border-bottom-width: 4px;
+        }
+
+        .border-t-2 {
+            border-top-width: 2px;
+        }
+
+        .border-l-4 {
+            border-left-width: 4px;
+        }
+
+        .border-b-2 {
+            border-bottom-width: 2px;
+        }
+
+        .border-dashed {
+            border-style: dashed;
+        }
+
+        .border-gray-200 {
+            border-color: var(--gray-200);
+        }
+
+        .border-gray-300 {
+            border-color: var(--gray-300);
+        }
+
+        .border-gray-800 {
+            border-color: var(--gray-800);
+        }
+
+        .border-nigerian-yellow {
+            border-color: var(--nigerian-yellow);
+        }
+
+        .border-green-100 {
+            border-color: var(--green-100);
+        }
+
+        .border-amber-100 {
+            border-color: var(--amber-100);
+        }
+
+        .border-blue-100 {
+            border-color: var(--blue-100);
+        }
+
+        .border-gray-100 {
+            border-color: var(--gray-100);
+        }
+
+        .border-gray-400 {
+            border-color: var(--gray-400);
+        }
+
+        /* Border Radius */
+        .rounded {
+            border-radius: 0.25rem;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .rounded-xl {
+            border-radius: 0.75rem;
+        }
+
+        .rounded-full {
+            border-radius: 9999px;
+        }
+
+        /* Width & Height */
+        .w-5 {
+            width: 1.25rem;
+        }
+
+        .w-10 {
+            width: 2.5rem;
+        }
+
+        .w-12 {
+            width: 3rem;
+        }
+
+        .w-24 {
+            width: 6rem;
+        }
+
+        .w-32 {
+            width: 8rem;
+        }
+
+        .h-5 {
+            height: 1.25rem;
+        }
+
+        .h-10 {
+            height: 2.5rem;
+        }
+
+        .h-12 {
+            height: 3rem;
+        }
+
+        .h-24 {
+            height: 6rem;
+        }
+
+        .h-40 {
+            height: 10rem;
+        }
+
+        .h-0\.5 {
+            height: 0.125rem;
+        }
+
+        .min-h-24 {
+            min-height: 6rem;
+        }
+
+        /* Custom Components */
+        .student-info-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-md);
+        }
+
+        .section-divider {
+            border-top: 2px solid var(--nigerian-yellow);
+            position: relative;
+        }
+
+        .section-divider::after {
+            content: "";
+            position: absolute;
+            top: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 4px;
+            background: var(--nigerian-green);
+            border-radius: 2px;
+        }
+
+        .grade-A1 {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            font-weight: 600;
+        }
+
+        .grade-B2 {
+            background-color: #f1f8e9;
+            color: #689f38;
+            font-weight: 600;
+        }
+
+        .grade-B3 {
+            background-color: #f9fbe7;
+            color: #afb42b;
+            font-weight: 600;
+        }
+
+        .grade-C4 {
+            background-color: #fffde7;
+            color: #f9a825;
+            font-weight: 600;
+        }
+
+        .grade-C5 {
+            background-color: #fff3e0;
+            color: #ef6c00;
+            font-weight: 600;
+        }
+
+        .grade-D6 {
+            background-color: #fbe9e7;
+            color: #d84315;
+            font-weight: 600;
+        }
+
+        .grade-E7 {
+            background-color: #ffebee;
+            color: #c62828;
+            font-weight: 600;
+        }
+
+        .grade-F9 {
+            background-color: #f3e5f5;
+            color: #7b1fa2;
+            font-weight: 600;
+        }
+
+        .grade-system-horizontal {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 2px;
+            margin-top: 8px;
+        }
+
+        .grade-item {
+            flex: 1;
+            min-width: 90px;
+            text-align: center;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        /* Table Styles */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid var(--gray-300);
+            padding: 8px;
+            text-align: left;
+        }
+
+        .fixed-table {
+            table-layout: fixed;
+        }
+
+        .subject-name {
+            width: 180px;
+        }
+
+        .assessment-col {
+            width: 160px;
+        }
+
+        .score-col {
+            width: 80px;
+        }
+
+        .grade-col {
+            width: 60px;
+        }
+
+        .remarks-col {
+            width: 120px;
+        }
+
+        /* Print Styles */
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+
+            body {
+                padding: 0;
+                margin: 0;
+            }
+
+            .report-card {
+                box-shadow: none;
+                border: none;
+            }
+
+            .break-after {
+                break-after: page;
+            }
+
+            .no-break {
+                break-inside: avoid;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        /* Button Styles */
+        .print-button {
+            background-color: var(--nigerian-green);
+            color: var(--white);
+            font-weight: 700;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            display: flex;
+            align-items: center;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-md);
+            transition: background-color 0.2s;
+        }
+
+        .print-button:hover {
+            background-color: var(--nigerian-green-dark);
+        }
+
+        /* Responsive Styles */
+        @media (min-width: 768px) {
+            .md-flex-row {
+                flex-direction: row;
+            }
+
+            .md-grid-cols-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .md-grid-cols-3 {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .md-col-span-2 {
+                grid-column: span 2;
+            }
+
+            .md-mb-0 {
+                margin-bottom: 0;
+            }
+
+            .md-ml-6 {
+                margin-left: 1.5rem;
+            }
+
+            .md-mt-0 {
+                margin-top: 0;
+            }
+        }
+
+        /* Additional Styles for Layout */
+        .relative {
+            position: relative;
+        }
+
+        .block {
+            display: block;
+        }
+
+        .shadow-sm {
+            box-shadow: var(--shadow-sm);
+        }
+
+        .shadow-inner {
+            box-shadow: var(--shadow-inner);
+        }
+
+        /* Custom Styles for Specific Elements */
+        .header-section {
+            background-image: linear-gradient(to right, var(--nigerian-green), var(--nigerian-green-dark));
+            color: var(--white);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            border-bottom: 4px solid var(--nigerian-yellow);
+        }
+
+        .header-logo {
+            width: 6rem;
+            height: 6rem;
+            background-color: var(--white);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 4px solid var(--nigerian-yellow);
+            color: var(--nigerian-green);
+            font-size: 1.875rem;
+            font-weight: 700;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .student-photo-placeholder {
+            width: 8rem;
+            height: 10rem;
+            background-image: linear-gradient(to bottom right, var(--gray-100), var(--gray-200));
+            border: 2px solid var(--gray-300);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            box-shadow: var(--shadow-inner);
+        }
+
+        .signature-line {
+            width: 8rem;
+            height: 0.125rem;
+            background-color: var(--gray-400);
+            margin-top: 0.25rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Table Row Alternating Colors */
+        .bg-gray-50 {
+            background-color: var(--gray-50);
+        }
+
+        .bg-nigerian-green {
+            background-color: var(--nigerian-green);
+        }
+
+        /* For the score display */
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+        }
+
+        .checked-circle {
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: var(--green-500);
+            color: var(--white);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .unchecked-circle {
+            width: 1.25rem;
+            height: 1.25rem;
+            background-color: var(--gray-200);
+            color: var(--gray-500);
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Print Button -->
+    <div class="no-print report-card-container">
+        <button onclick="window.print()" class="print-button">
+            <i class="fas fa-print mr-2"></i>
+            Print Report Card
+        </button>
+    </div>
+
+    <div class="report-card report-card-container">
+        <!-- Header -->
+        <div class="header-section md-flex-row justify-between items-center">
+            <div class="mb-4 md-mb-0">
+                <h1 class="text-2xl md:text-3xl font-bold">Springfield Secondary School</h1>
+                <p class="italic mt-1 opacity-90">Termly Academic Report Card</p>
+                <p class="text-sm mt-2">123 Education Road, Abuja, Nigeria</p>
+            </div>
+            <div class="header-logo">
+                SSS
+            </div>
+        </div>
+
+        <!-- Report Title -->
+        <div class="bg-gray-50 py-4 text-center border-b border-gray-200 relative">
+            <div class="section-divider pt-2"></div>
+            <h2 class="text-xl md:text-2xl font-bold text-nigerian-green-dark">STUDENT'S REPORT CARD</h2>
+            <p class="text-gray-600 mt-1">2023/2024 - Second Term</p>
+        </div>
+
+        <!-- Student Information -->
+        <div class="p-6">
+            <div class="student-info-card rounded-xl p-5 mb-4">
+                <div class="flex flex-col md-flex-row">
+                    <div class="flex-1">
+                        <h3 class="text-lg font-bold text-nigerian-green-dark mb-4 pb-2 border-b border-nigerian-yellow flex items-center">
+                            <i class="fas fa-user-graduate mr-2"></i>
+                            STUDENT INFORMATION
+                        </h3>
+                        
+                        <div class="grid grid-cols-1 md-grid-cols-2 gap-4">
+                            <div class="flex items-center p-3 rounded-lg border border-gray-100 bg-white shadow-sm">
+                                <div class="w-10 h-10 rounded-full bg-nigerian-green flex items-center justify-center mr-3">
+                                    <i class="fas fa-user text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-500 font-semibold">STUDENT NAME</div>
+                                    <div class="font-bold text-nigerian-green-dark">John Chukwuma Adeyemi</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center p-3 rounded-lg border border-gray-100 bg-white shadow-sm">
+                                <div class="w-10 h-10 rounded-full bg-nigerian-green flex items-center justify-center mr-3">
+                                    <i class="fas fa-venus-mars text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-500 font-semibold">GENDER</div>
+                                    <div class="font-bold text-nigerian-green-dark">Male</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center p-3 rounded-lg border border-gray-100 bg-white shadow-sm">
+                                <div class="w-10 h-10 rounded-full bg-nigerian-green flex items-center justify-center mr-3">
+                                    <i class="fas fa-users text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-500 font-semibold">CLASS</div>
+                                    <div class="font-bold text-nigerian-green-dark">SS 2A</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center p-3 rounded-lg border border-gray-100 bg-white shadow-sm">
+                                <div class="w-10 h-10 rounded-full bg-nigerian-green flex items-center justify-center mr-3">
+                                    <i class="fas fa-graduation-cap text-white text-sm"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs text-gray-500 font-semibold">SESSION</div>
+                                    <div class="font-bold text-nigerian-green-dark">2023/2024</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 md-mt-0 md-ml-6 flex flex-col items-center justify-center border-l border-gray-200 pl-6">
+                        <div class="student-photo-placeholder mx-auto mb-4">
+                            <div class="text-center">
+                                <i class="fas fa-user text-4xl mb-2 block text-gray-400"></i>
+                                <span class="text-sm">STUDENT PHOTO</span>
+                            </div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <p class="text-sm font-medium">Signature:</p>
+                            <div class="signature-line"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Information -->
+        <div class="p-6 pt-0">
+            <div class="student-info-card rounded-xl p-5">
+                <h3 class="text-lg font-bold text-nigerian-green-dark mb-4 pb-2 border-b border-nigerian-yellow flex items-center">
+                    <i class="fas fa-calendar-alt mr-2"></i>
+                    ATTENDANCE RECORD
+                </h3>
+                
+                <div class="grid grid-cols-1 md-grid-cols-3 gap-4">
+                    <div class="flex flex-col items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm text-center">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-2">
+                            <i class="fas fa-door-open text-blue-600"></i>
+                        </div>
+                        <div class="text-xs text-gray-500 font-semibold">SCHOOL OPENED</div>
+                        <div class="font-bold text-nigerian-green-dark">90 Days</div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm text-center">
+                        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-2">
+                            <i class="fas fa-calendar-check text-green-600"></i>
+                        </div>
+                        <div class="text-xs text-gray-500 font-semibold">DAYS PRESENT</div>
+                        <div class="font-bold text-nigerian-green-dark text-xl">85 Days</div>
+                    </div>
+                    
+                    <div class="flex flex-col items-center p-4 rounded-lg border border-gray-100 bg-white shadow-sm text-center">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
+                            <i class="fas fa-user-clock text-purple-600"></i>
+                        </div>
+                        <div class="text-xs text-gray-500 font-semibold">ATTENDANCE RATE</div>
+                        <div class="font-bold text-nigerian-green-dark text-xl">94.4%</div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 grid grid-cols-1 md-grid-cols-3 gap-4">
+                    <div class="flex justify-between items-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-100">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center mr-3">
+                                <i class="fas fa-check text-white"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-600">Days Present</div>
+                                <div class="font-bold text-green-700 text-lg">85 Days</div>
+                            </div>
+                        </div>
+                        <div class="text-green-500 text-2xl font-bold">✓</div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center p-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border border-amber-100">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-amber-500 flex items-center justify-center mr-3">
+                                <i class="fas fa-times text-white"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-600">Days Absent</div>
+                                <div class="font-bold text-amber-700 text-lg">5 Days</div>
+                            </div>
+                        </div>
+                        <div class="text-amber-500 text-2xl font-bold">!</div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-100">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center mr-3">
+                                <i class="fas fa-calendar text-white"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm text-gray-600">School Days</div>
+                                <div class="font-bold text-blue-700 text-lg">90 Days</div>
+                            </div>
+                        </div>
+                        <div class="text-blue-500 text-2xl font-bold">📅</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic Performance -->
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-nigerian-green-dark mb-4 pb-2 border-b-2 border-nigerian-yellow">ACADEMIC PERFORMANCE</h3>
+            
+            <table class="fixed-table print-optimized">
+                <thead>
+                    <tr class="bg-nigerian-green text-white">
+                        <th class="p-3 text-left border border-gray-300 subject-name">SUBJECT</th>
+                        <th class="p-3 text-left border border-gray-300 assessment-col">CONTINUOUS ASSESSMENT</th>
+                        <th class="p-3 text-left border border-gray-300 score-col">TOTAL SCORE</th>
+                        <th class="p-3 text-left border border-gray-300 grade-col">GRADE</th>
+                        <th class="p-3 text-left border border-gray-300 remarks-col">REMARKS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-gray-50">
+                        <td class="p-3 border border-gray-300 font-semibold">Mathematics</td>
+                        <td class="p-3 border border-gray-300">
+                            <div class="score-item">
+                                <span>Test 1:</span>
+                                <span class="font-medium">18/20</span>
+                            </div>
+                            <div class="score-item">
+                                <span>Test 2:</span>
+                                <span class="font-medium">17/20</span>
+                            </div>
+                            <div class="score-item">
+                                <span>Assignment:</span>
+                                <span class="font-medium">9/10</span>
+                            </div>
+                        </td>
+                        <td class="p-3 border border-gray-300 font-bold">85</td>
+                        <td class="p-3 border border-gray-300 font-semibold grade-A1">A1</td>
+                        <td class="p-3 border border-gray-300">Excellent</td>
+                    </tr>
+                    <tr>
+                        <td class="p-3 border border-gray-300 font-semibold">English Language</td>
+                        <td class="p-3 border border-gray-300">
+                            <div class="score-item">
+                                <span>Test 1:</span>
+                                <span class="font-medium">15/20</span>
+                            </div>
+                            <div class="score-item">
+                                <span>Test 2:</span>
+                                <span class="font-medium">16/20</span>
+                            </div>
+                            <div class="score-item">
+                                <span>Oral:</span>
+                                <span class="font-medium">8/10</span>
+                            </div>
+                        </td>
+                        <td class="p-3 border border-gray-300 font-bold">75</td>
+                        <td class="p-3 border border-gray-300 font-semibold grade-B2">B2</td>
+                        <td class="p-3 border border-gray-300">Very Good</td>
+                    </tr>
+                    <tr class="bg-gray-50">
+                        <td class="p-3 border border-gray-300 font-semibold">Physics</td>
+                        <td class="p-3 border border-gray-300">
+                            <div class="score-item">
+                                <span>Test 1:</span>
+                                <span class="font-medium">14/20</span>
+                            </div>
+                            <div class="score-item">
+                                <span>Test 2:</span>
+                                <span class="font-medium">13/20</span>
+                            </div>
+                            <div class="score-item">
+                                <span>Practical:</span>
+                                <span class="font-medium">7/10</span>
+                            </div>
+                        </td>
+                        <td class="p-3 border border-gray-300 font-bold">65</td>
+                        <td class="p-3 border border-gray-300 font-semibold grade-C4">C4</td>
+                        <td class="p-3 border border-gray-300">Good</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Psychomotor Domain -->
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-nigerian-green-dark mb-4 pb-2 border-b-2 border-nigerian-yellow">PSYCHOMOTOR DOMAIN ASSESSMENT</h3>
+            
+            <table class="print-optimized">
+                <thead>
+                    <tr class="bg-nigerian-green text-white">
+                        <th class="p-2 text-left border border-gray-300">SKILL AREA</th>
+                        <th class="p-2 text-center border border-gray-300">5</th>
+                        <th class="p-2 text-center border border-gray-300">4</th>
+                        <th class="p-2 text-center border border-gray-300">3</th>
+                        <th class="p-2 text-center border border-gray-300">2</th>
+                        <th class="p-2 text-center border border-gray-300">1</th>
+                        <th class="p-2 text-left border border-gray-300">REMARKS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-gray-50">
+                        <td class="p-2 border border-gray-300 font-semibold">Sports</td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="checked-circle">✓</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300">Excellent in sports</td>
+                    </tr>
+                    <tr>
+                        <td class="p-2 border border-gray-300 font-semibold">Handwriting</td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="checked-circle">✓</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300">Very good handwriting</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="mt-3 text-xs text-gray-600">
+                <p><strong>Rating Scale:</strong> 5 = Excellent, 4 = Very Good, 3 = Good, 2 = Fair, 1 = Poor</p>
+            </div>
+        </div>
+
+        <!-- Affective Domain -->
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-nigerian-green-dark mb-4 pb-2 border-b-2 border-nigerian-yellow">AFFECTIVE DOMAIN ASSESSMENT</h3>
+            
+            <table class="print-optimized">
+                <thead>
+                    <tr class="bg-nigerian-green text-white">
+                        <th class="p-2 text-left border border-gray-300">CHARACTER TRAIT</th>
+                        <th class="p-2 text-center border border-gray-300">5</th>
+                        <th class="p-2 text-center border border-gray-300">4</th>
+                        <th class="p-2 text-center border border-gray-300">3</th>
+                        <th class="p-2 text-center border border-gray-300">2</th>
+                        <th class="p-2 text-center border border-gray-300">1</th>
+                        <th class="p-2 text-left border border-gray-300">REMARKS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="bg-gray-50">
+                        <td class="p-2 border border-gray-300 font-semibold">Punctuality</td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="checked-circle">✓</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300">Always punctual</td>
+                    </tr>
+                    <tr>
+                        <td class="p-2 border border-gray-300 font-semibold">Neatness</td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="checked-circle">✓</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300 text-center">
+                            <div class="unchecked-circle">-</div>
+                        </td>
+                        <td class="p-2 border border-gray-300">Very neat always</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="mt-3 text-xs text-gray-600">
+                <p><strong>Rating Scale:</strong> 5 = Excellent, 4 = Very Good, 3 = Good, 2 = Fair, 1 = Poor</p>
+            </div>
+        </div>
+
+        <!-- Summary Section -->
+        <div class="p-6 grid grid-cols-1 md-grid-cols-3 gap-6">
+            <!-- Academic Summary -->
+            <div class="md-col-span-2 bg-gray-50 rounded-lg p-4 border-l-4 border-nigerian-green no-break">
+                <h4 class="text-lg font-bold text-nigerian-green-dark mb-4">ACADEMIC SUMMARY</h4>
+                <div class="space-y-3">
+                    <div class="flex justify-between border-b border-dashed border-gray-300 pb-2">
+                        <span class="font-semibold">Total Marks Obtainable:</span>
+                        <span class="font-bold text-nigerian-green-dark">900</span>
+                    </div>
+                    <div class="flex justify-between border-b border-dashed border-gray-300 pb-2">
+                        <span class="font-semibold">Total Marks Obtained:</span>
+                        <span class="font-bold text-nigerian-green-dark">745</span>
+                    </div>
+                    <div class="flex justify-between border-b border-dashed border-gray-300 pb-2">
+                        <span class="font-semibold">Percentage:</span>
+                        <span class="font-bold text-nigerian-green-dark">82.8%</span>
+                    </div>
+                    <div class="flex justify-between border-b border-dashed border-gray-300 pb-2">
+                        <span class="font-semibold">Average Score:</span>
+                        <span class="font-bold text-nigerian-green-dark">82.8</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Horizontal Grading System -->
+            <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 no-break">
+                <h4 class="text-lg font-bold text-nigerian-green-dark mb-4">GRADING SYSTEM</h4>
+                <div class="grade-system-horizontal">
+                    <div class="grade-item grade-A1">
+                        <div class="font-bold text-sm">A1</div>
+                        <div class="text-xs">75% - 100%</div>
+                        <div class="text-xs mt-1">Excellent</div>
+                    </div>
+                    <div class="grade-item grade-B2">
+                        <div class="font-bold text-sm">B2</div>
+                        <div class="text-xs">70% - 74%</div>
+                        <div class="text-xs mt-1">Very Good</div>
+                    </div>
+                    <div class="grade-item grade-C4">
+                        <div class="font-bold text-sm">C4</div>
+                        <div class="text-xs">60% - 64%</div>
+                        <div class="text-xs mt-1">Good</div>
+                    </div>
+                    <div class="grade-item grade-C5">
+                        <div class="font-bold text-sm">C5</div>
+                        <div class="text-xs">55% - 59%</div>
+                        <div class="text-xs mt-1">Credit</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="p-6">
+            <h3 class="text-xl font-bold text-nigerian-green-dark mb-4 pb-2 border-b-2 border-nigerian-yellow">COMMENTS</h3>
+            <div class="grid grid-cols-1 md-grid-cols-2 gap-6 no-break">
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <h4 class="text-lg font-bold text-nigerian-green-dark mb-2">Class Teacher's Remarks</h4>
+                    <p class="text-gray-700 min-h-24">
+                        John is a brilliant student who shows exceptional promise in Mathematics and Sciences. He participates actively in class and shows good leadership qualities. He should maintain his excellent performance.
+                    </p>
+                </div>
+                
+                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <h4 class="text-lg font-bold text-nigerian-green-dark mb-2">Principal's Remarks</h4>
+                    <p class="text-gray-700 min-h-24">
+                        An outstanding performance this term. John has shown remarkable improvement and consistency. He is a model student to others. Keep up the excellent work. We expect even better performance next term.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signature Area -->
+        <div class="p-6 border-t-2 border-dashed border-gray-300 mt-4 flex flex-col md-flex-row justify-between no-break">
+            <div class="text-center mb-6 md-mb-0">
+                <p>Class Teacher's Signature</p>
+                <div class="mt-16 border-t border-gray-800 pt-1">___________________</div>
+            </div>
+            <div class="text-center mb-6 md-mb-0">
+                <p>Principal's Signature</p>
+                <div class="mt-16 border-t border-gray-800 pt-1">___________________</div>
+            </div>
+            <div class="text-center">
+                <p>Parent/Guardian's Signature</p>
+                <div class="mt-16 border-t border-gray-800 pt-1">Date: ___________________</div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-gray-50 py-4 text-center border-t border-gray-200">
+            <p class="text-gray-700">Springfield Secondary School - Report Card</p>
+            <p class="text-gray-500 text-sm mt-1">Second Term - 2023/2024</p>
+            <p class="text-gray-500 text-sm mt-1">This report is based on the Nigerian Grading System for Secondary Schools</p>
+        </div>
+    </div>
+
+    <script>
+        // Can add any JavaScript functionality here if needed
+        // For example, calculating attendance percentage or averages
+        
+        function calculateAttendancePercentage(daysPresent, daysTotal) {
+            return Math.round((daysPresent / daysTotal) * 100 * 10) / 10;
+        }
+        
+        function calculateAverage(totalMarks, numberOfSubjects) {
+            return Math.round((totalMarks / numberOfSubjects) * 10) / 10;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Report Card - Nigerian Secondary School</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --nigerian-green: #008751;
+            --nigerian-green-dark: #005732;
+            --nigerian-yellow: #e5ae0c;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: white;
+            color: var(--gray-800);
+            font-size: 9px;
+            line-height: 1.2;
+            padding: 0;
+            margin: 0;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: 8px !important;
+            }
+            .report-card {
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            @page {
+                size: A4;
+                margin: 0.3cm;
+            }
+            table { 
+                page-break-inside: avoid; 
+            }
+            tr { 
+                page-break-inside: avoid; 
+            }
+            td { 
+                page-break-inside: avoid; 
+            }
+        }
+
+        .print-button-container {
+            text-align: center;
+            margin-bottom: 4px;
+            padding: 4px;
+        }
+
+        .print-button {
+            background-color: var(--nigerian-green);
+            color: white;
+            font-weight: bold;
+            padding: 4px 8px;
+            border: none;
+            border-radius: 2px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            font-size: 9px;
+        }
+
+        .print-button i {
+            margin-right: 4px;
+            font-size: 9px;
+        }
+
+        .report-card {
+            background-color: white;
+            border: 1px solid var(--gray-300);
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--nigerian-green);
+            color: white;
+            padding: 4px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--nigerian-yellow);
+        }
+
+        .header-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header h1 {
+            font-size: 11px;
+            font-weight: bold;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .header p {
+            font-size: 8px;
+            opacity: 0.9;
+            margin: 1px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .header-logo {
+            width: 35px;
+            height: 35px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--nigerian-yellow);
+            color: var(--nigerian-green);
+            font-size: 10px;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-left: 4px;
+        }
+
+        .report-title {
+            background-color: var(--gray-50);
+            padding: 4px;
+            text-align: center;
+            border-bottom: 1px solid var(--gray-300);
+        }
+
+        .report-title h2 {
+            font-size: 10px;
+            font-weight: bold;
+            color: var(--nigerian-green-dark);
+            margin: 0;
+        }
+
+        .report-title p {
+            color: var(--gray-600);
+            font-size: 8px;
+            margin: 1px 0 0 0;
+        }
+
+        .main-content {
+            padding: 6px;
+        }
+
+        .student-info-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 6px;
+            margin-bottom: 6px;
+            border: 1px solid var(--gray-200);
+            border-radius: 3px;
+            padding: 4px;
+            background: var(--gray-50);
+        }
+
+        .student-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .detail-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: var(--nigerian-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 4px;
+            flex-shrink: 0;
+            color: white;
+            font-size: 7px;
+        }
+
+        .detail-text {
+            min-width: 0;
+        }
+
+        .detail-label {
+            font-size: 7px;
+            color: var(--gray-500);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .detail-value {
+            font-size: 8px;
+            font-weight: bold;
+            color: var(--nigerian-green-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .photo-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-placeholder {
+            width: 60px;
+            height: 75px;
+            background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
+            border: 1px solid var(--gray-300);
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-500);
+            font-size: 7px;
+        }
+
+        .photo-placeholder i {
+            font-size: 14px;
+            color: var(--gray-400);
+            margin-bottom: 2px;
+        }
+
+        .signature-label {
+            font-size: 7px;
+            text-align: center;
+            margin-top: 2px;
+        }
+
+        .attendance-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-bottom: 6px;
+        }
+
+        .attendance-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 3px;
+            padding: 4px;
+            text-align: center;
+        }
+
+        .attendance-icon {
+            font-size: 10px;
+            margin-bottom: 2px;
+        }
+
+        .attendance-label {
+            font-size: 7px;
+            color: var(--gray-500);
+            font-weight: 600;
+        }
+
+        .attendance-value {
+            font-size: 9px;
+            font-weight: bold;
+            color: var(--nigerian-green-dark);
+        }
+
+        .summary-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .summary-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 3px;
+            padding: 4px;
+        }
+
+        .summary-header {
+            font-size: 8px;
+            font-weight: bold;
+            color: var(--nigerian-green-dark);
+            margin-bottom: 4px;
+            border-bottom: 1px solid var(--nigerian-yellow);
+            padding-bottom: 2px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+            font-size: 8px;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+
+        .summary-value {
+            font-weight: bold;
+            color: var(--nigerian-green-dark);
+        }
+
+        .grading-table {
+            width: 100%;
+            font-size: 7px;
+            border-collapse: collapse;
+        }
+
+        .grading-table th {
+            background: var(--nigerian-green);
+            color: white;
+            font-weight: bold;
+            padding: 2px 3px;
+            border: 1px solid var(--gray-300);
+            text-align: left;
+        }
+
+        .grading-table td {
+            padding: 2px 3px;
+            border: 1px solid var(--gray-300);
+        }
+
+        .grading-table tr:nth-child(even) {
+            background-color: var(--gray-50);
+        }
+
+        .grading-row-with-color {
+            font-weight: bold;
+        }
+
+        .academic-table-container {
+            margin-bottom: 6px;
+        }
+
+        .academic-table {
+            width: 100%;
+            font-size: 8px;
+            border-collapse: collapse;
+        }
+
+        .academic-table th {
+            background: var(--nigerian-green);
+            color: white;
+            font-weight: bold;
+            padding: 3px 4px;
+            border: 1px solid var(--gray-300);
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .academic-table td {
+            padding: 3px 4px;
+            border: 1px solid var(--gray-300);
+            vertical-align: top;
+        }
+
+        .academic-table tr:nth-child(even) {
+            background-color: var(--gray-50);
+        }
+
+        .subject-name {
+            font-weight: 600;
+            white-space: nowrap;
+            min-width: 60px;
+        }
+
+        .scores-cell {
+            min-width: 80px;
+        }
+
+        .score-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1px;
+            font-size: 7px;
+        }
+
+        .total-score {
+            font-weight: bold;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .grade-cell {
+            text-align: center;
+            font-weight: bold;
+            white-space: nowrap;
+            border-radius: 2px;
+        }
+
+        .remarks-cell {
+            font-size: 7px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 80px;
+        }
+
+        .domain-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .domain-table {
+            width: 100%;
+            font-size: 7px;
+            border-collapse: collapse;
+        }
+
+        .domain-table th {
+            background: var(--nigerian-green);
+            color: white;
+            font-weight: bold;
+            padding: 2px 3px;
+            border: 1px solid var(--gray-300);
+            text-align: center;
+        }
+
+        .domain-table td {
+            padding: 2px 3px;
+            border: 1px solid var(--gray-300);
+            text-align: center;
+        }
+
+        .rating-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7px;
+        }
+
+        .rating-indicator.checked {
+            background-color: var(--nigerian-green);
+            color: white;
+        }
+
+        .rating-indicator.unchecked {
+            background-color: var(--gray-200);
+            color: var(--gray-500);
+        }
+
+        .rating-scale {
+            font-size: 7px;
+            color: var(--gray-600);
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 4px;
+        }
+
+        .comments-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .comment-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 3px;
+            padding: 4px;
+            min-height: 50px;
+        }
+
+        .comment-header {
+            font-size: 8px;
+            font-weight: bold;
+            color: var(--nigerian-green-dark);
+            margin-bottom: 2px;
+            border-bottom: 1px solid var(--nigerian-yellow);
+            padding-bottom: 1px;
+        }
+
+        .comment-text {
+            font-size: 7px;
+            color: var(--gray-700);
+            line-height: 1.1;
+        }
+
+        .signature-area {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-bottom: 6px;
+            padding-top: 4px;
+            border-top: 1px dashed var(--gray-300);
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-label-text {
+            font-size: 7px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .signature-line {
+            border-top: 1px solid var(--gray-800);
+            margin-top: 12px;
+            padding-top: 2px;
+            font-size: 6px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 4px;
+            border-top: 1px solid var(--gray-200);
+            background-color: var(--gray-50);
+            font-size: 7px;
+            color: var(--gray-600);
+        }
+
+        .footer p {
+            margin: 1px 0;
+        }
+
+        .mb-2 { 
+            margin-bottom: 4px; 
+        }
+        
+        .text-center { 
+            text-align: center; 
+        }
+        
+        .font-bold { 
+            font-weight: bold; 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="report-card">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>{{schoolName}}</h1>
+                <p>{{schoolMotto}}</p>
+                <p>{{schoolAdrees}}</p>
+            </div>
+            <div class="header-logo">
+                {{getInitials schoolName}}
+            </div>
+        </div>
+
+        <!-- Report Title -->
+        <div class="report-title">
+            <h2>STUDENT'S REPORT CARD</h2>
+            <p>{{reportSession}} - {{reportTerm}}</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Student Info & Photo -->
+            <div class="student-info-section">
+                <div class="student-details">
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-user"></i></div>
+                        <div class="detail-text">
+                            <div class="detail-label">NAME</div>
+                            <div class="detail-value">{{studentName}}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-venus-mars"></i></div>
+                        <div class="detail-text">
+                            <div class="detail-label">GENDER</div>
+                            <div class="detail-value">{{sex}}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-users"></i></div>
+                        <div class="detail-text">
+                            <div class="detail-label">CLASS</div>
+                            <div class="detail-value">{{class}}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-calendar"></i></div>
+                        <div class="detail-text">
+                            <div class="detail-label">SESSION</div>
+                            <div class="detail-value">{{reportSession}}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="photo-section">
+                    <div class="photo-placeholder">
+                        <div class="text-center">
+                            <i class="fas fa-user"></i>
+                            <div>PHOTO</div>
+                        </div>
+                    </div>
+                    <div class="signature-label">Signature: _________</div>
+                </div>
+            </div>
+
+            <!-- Attendance Record -->
+            <div class="attendance-section mb-2">
+                <div class="attendance-card">
+                    <div class="attendance-icon" style="color: #3b82f6;">
+                        <i class="fas fa-door-open"></i>
+                    </div>
+                    <div class="attendance-label">SCHOOL DAYS</div>
+                    <div class="attendance-value">{{numOfTimeSchoolOpenned}}</div>
+                </div>
+                
+                <div class="attendance-card">
+                    <div class="attendance-icon" style="color: #16a34a;">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="attendance-label">DAYS PRESENT</div>
+                    <div class="attendance-value">{{numOfTimeStudentPresent}}</div>
+                </div>
+                
+                <div class="attendance-card">
+                    <div class="attendance-icon" style="color: #a855f7;">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="attendance-label">ATTENDANCE RATE</div>
+                    <div class="attendance-value">{{calculateAttendancePercentage numOfTimeStudentPresent numOfTimeSchoolOpenned}}%</div>
+                </div>
+            </div>
+
+            <!-- Academic Summary & Grading System -->
+            <div class="summary-section mb-2">
+                <div class="summary-card">
+                    <div class="summary-header">ACADEMIC SUMMARY</div>
+                    <div class="summary-item">
+                        <span class="summary-label">Total Obtainable:</span>
+                        <span class="summary-value">{{totolMarkObtainable}}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Total Obtained:</span>
+                        <span class="summary-value">{{totalMarkObtained}}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Percentage:</span>
+                        <span class="summary-value">{{percentage}}%</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Average:</span>
+                        <span class="summary-value">{{calculateAverage totalMarkObtained subjects.length}}</span>
+                    </div>
+                </div>
+                
+                <div class="summary-card">
+                    <div class="summary-header">GRADING SYSTEM</div>
+                    <table class="grading-table">
+                        <thead>
+                            <tr>
+                                <th>Grade</th>
+                                <th>Range</th>
+                                <th>Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each gradeInterpretation}}
+                            <tr class="grading-row-with-color" style="{{#if (getGradeColor this.grade ../gradeInterpretation)}}background-color: {{getGradeColor this.grade ../gradeInterpretation}}20;{{/if}}">
+                                <td style="{{#if (getGradeColor this.grade ../gradeInterpretation)}}color: {{getGradeColor this.grade ../gradeInterpretation}};{{/if}}">{{this.grade}}</td>
+                                <td>{{this.minPercentage}}% - {{this.maxPercentage}}%</td>
+                                <td>{{this.remark}}</td>
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Academic Performance Table -->
+            <div class="academic-table-container mb-2">
+                <div class="summary-header mb-2">ACADEMIC PERFORMANCE</div>
+                <table class="academic-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 20%">SUBJECT</th>
+                            <th style="width: 30%">CONTINUOUS ASSESSMENT</th>
+                            <th style="width: 10%">TOTAL</th>
+                            <th style="width: 10%">GRADE</th>
+                            <th style="width: 30%">REMARKS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each subjects}}
+                        <tr>
+                            <td class="subject-name">{{this.subjectName}}</td>
+                            <td class="scores-cell">
+                                {{#each this.scores}}
+                                <div class="score-item">
+                                    <span>{{this.name}}:</span>
+                                    <span>{{this.value}}/{{this.maxValue}}</span>
+                                </div>
+                                {{/each}}
+                            </td>
+                            <td class="total-score">{{this.totalScore}}</td>
+                            <td class="grade-cell" style="{{#if (getGradeColor this.grade ../gradeInterpretation)}}background-color: {{getGradeColor this.grade ../gradeInterpretation}}; color: white;{{/if}}">
+                                {{this.grade}}
+                            </td>
+                            <td class="remarks-cell">{{this.remark}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Domain Assessments -->
+            {{#if psychomotorSkills.items.length}}
+            <div class="domain-container mb-2">
+                {{#if psychomotorSkills.items.length}}
+                <div>
+                    <div class="summary-header mb-2">PSYCHOMOTOR DOMAIN</div>
+                    <table class="domain-table">
+                        <thead>
+                            <tr>
+                                <th>SKILL AREA</th>
+                                {{#each psychomotorSkills.items.[0].rating}}
+                                <th>{{this.rate}}</th>
+                                {{/each}}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each psychomotorSkills.items}}
+                            <tr>
+                                <td style="text-align: left; font-size: 7px;">{{this.label}}</td>
+                                {{#each this.rating}}
+                                <td>
+                                    <div class="rating-indicator {{#if this.value}}checked{{else}}unchecked{{/if}}">
+                                        {{#if this.value}}✓{{else}}-{{/if}}
+                                    </div>
+                                </td>
+                                {{/each}}
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                {{/if}}
+
+                {{#if affectiveDomain.items.length}}
+                <div>
+                    <div class="summary-header mb-2">AFFECTIVE DOMAIN</div>
+                    <table class="domain-table">
+                        <thead>
+                            <tr>
+                                <th>CHARACTER TRAIT</th>
+                                {{#each affectiveDomain.items.[0].rating}}
+                                <th>{{this.rate}}</th>
+                                {{/each}}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#each affectiveDomain.items}}
+                            <tr>
+                                <td style="text-align: left; font-size: 7px;">{{this.label}}</td>
+                                {{#each this.rating}}
+                                <td>
+                                    <div class="rating-indicator {{#if this.value}}checked{{else}}unchecked{{/if}}">
+                                        {{#if this.value}}✓{{else}}-{{/if}}
+                                    </div>
+                                </td>
+                                {{/each}}
+                            </tr>
+                            {{/each}}
+                        </tbody>
+                    </table>
+                </div>
+                {{/if}}
+            </div>
+            
+            <div class="rating-scale">
+                Rating Scale: 5 = Excellent, 4 = Very Good, 3 = Good, 2 = Fair, 1 = Poor
+            </div>
+            {{/if}}
+
+            <!-- Comments -->
+            <div class="comments-section mb-2">
+                <div class="comment-card">
+                    <div class="comment-header">CLASS TEACHER'S REMARKS</div>
+                    <div class="comment-text">
+                        {{#if commentsAndSignatures.teacherComment}}
+                            {{commentsAndSignatures.teacherComment}}
+                        {{else}}
+                            No comments available.
+                        {{/if}}
+                    </div>
+                </div>
+                
+                <div class="comment-card">
+                    <div class="comment-header">PRINCIPAL'S REMARKS</div>
+                    <div class="comment-text">
+                        {{#if commentsAndSignatures.headTeacherComment}}
+                            {{commentsAndSignatures.headTeacherComment}}
+                        {{else}}
+                            No comments available.
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Signatures -->
+            <div class="signature-area">
+                <div class="signature-box">
+                    <div class="signature-label-text">Class Teacher</div>
+                    <div class="signature-line">Date: ___________________</div>
+                </div>
+                
+                <div class="signature-box">
+                    <div class="signature-label-text">Principal</div>
+                    <div class="signature-line">Date: ___________________</div>
+                </div>
+                
+                <div class="signature-box">
+                    <div class="signature-label-text">Parent/Guardian</div>
+                    <div class="signature-line">Date: _______________</div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <p>{{schoolName}} - Report Card</p>
+                <p>{{reportTerm}} {{reportSession}}</p>
+                <p>Nigerian Secondary School Grading System</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

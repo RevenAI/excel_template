@@ -61,6 +61,13 @@ export interface PuppeteerRenderOptions {
    * Example: "1-3"
    */
   pageRange?: string;
+
+  margin?: {
+        top: string
+        bottom: string
+        left: string
+        right: string
+  },
 }
 
 /**
@@ -143,6 +150,10 @@ export class PuppeteerService {
       await page.setContent(opts.html, {
         waitUntil: "domcontentloaded",
       });
+
+          //Disable JS BEFORE loading content
+          //JS not needed in the pdf
+    await page.setJavaScriptEnabled(false);
 
       const pdfOptions: PDFOptions = {
         printBackground: opts.printBackground ?? true,
