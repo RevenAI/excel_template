@@ -1,3 +1,4 @@
+import { imageService } from "../image/image-service.js";
 
 export type StudentGrades =
   | "A1"
@@ -65,19 +66,26 @@ export interface FinalReportCard {
     schoolMotto: string
     reportTerm: string
     reportSession: string
+    schoolLogo: string
 
     //student info
     studentName: string
+    regNumber: string
     class: string
     sex: string
+    profilePicture: string
 
     //attendance
     numOfTimeSchoolOpenned: number
     numOfTimeStudentPresent: number
     numOfTimeStudentAbsent: number
-    firstTermStudentAttendancePercentage: number
-    secondTermStudentAttendancePercentage: number
-    thirdTermStudentAttendancePercentage: number
+
+    studentAttendancePercentagePerTerm: {
+        firstTermStudentAttendancePercentage: number
+        secondTermStudentAttendancePercentage: number
+        thirdTermStudentAttendancePercentage: number
+        averagePerTerm: number
+    }
 
     //subjects and scores
     subjects: ISubjectRecord[]
@@ -99,15 +107,25 @@ export interface FinalReportCard {
 }
 
 
-  // private async getDummyLogo() {
-  //   return imageService.readImageDataUrl(
-  //     "nexalearn",
-  //     "logo",
-  //     "nexalearn-logo-thumb.webp"
-  //   );
-  // }
+  async function getDummyLogo() {
+    return imageService.readImageDataUrl(
+      "nexalearn",
+      "logo",
+      "nexalearn-logo-abidemi_ademola-1767972388956-ee184b9b904b-thumb.webp"
+    );
+  }
+  const schlLogo = await getDummyLogo()
 
-  // private async getDummySignature() {
+  async function getProfilePic() {
+    return imageService.readImageDataUrl(
+      "nexalearn",
+      "passport",
+      "nexalearn-passport-abidemi_ademola-1767950650188-9296cd34d7df-thumb.webp"
+    );
+  }
+  const profilePic = await getProfilePic()
+
+  // async function getDummySignature() {
   //   return imageService.readImageDataUrl(
   //     "nexalearn",
   //     "signature",
@@ -126,13 +144,17 @@ export const dummyFinalReportCard: FinalReportCard = {
   schoolMotto: "Knowledge is Light",
   reportTerm: "Second Term",
   reportSession: "2024 / 2025 Academic Session",
+  schoolLogo: schlLogo || '',
 
   // =========================
   // Student Information
   // =========================
   studentName: "Abidemi Enitan",
+  regNumber: 'STU-346767238',
   class: "SS 2",
   sex: "Female",
+
+  profilePicture: profilePic || '',
 
   // =========================
   // Attendance
@@ -141,71 +163,16 @@ export const dummyFinalReportCard: FinalReportCard = {
   numOfTimeStudentPresent: 58,
   numOfTimeStudentAbsent: 4,
 
+  studentAttendancePercentagePerTerm: {
   firstTermStudentAttendancePercentage: 90,
   secondTermStudentAttendancePercentage: 94,
   thirdTermStudentAttendancePercentage: 0,
+    averagePerTerm: 0,
+  },
 
   // =========================
   // Subjects Offered
   // =========================
-  // subjects: [
-  //   {
-  //     subjectName: "Mathematics",
-  //     scores: [
-  //       { name: "CA", value: 27, maxValue: 30 },
-  //       { name: "Test", value: 18, maxValue: 20 },
-  //       { name: "Exam", value: 41, maxValue: 50 },
-  //     ],
-  //     totalScore: 86,
-  //     grade: "A1",
-  //     remark: "Excellent",
-  //   },
-  //   {
-  //     subjectName: "English Language",
-  //     scores: [
-  //       { name: "CA", value: 25, maxValue: 30 },
-  //       { name: "Test", value: 17, maxValue: 20 },
-  //       { name: "Exam", value: 38, maxValue: 50 },
-  //     ],
-  //     totalScore: 80,
-  //     grade: "B2",
-  //     remark: "Very Good",
-  //   },
-  //   {
-  //     subjectName: "Biology",
-  //     scores: [
-  //       { name: "CA", value: 24, maxValue: 30 },
-  //       { name: "Test", value: 15, maxValue: 20 },
-  //       { name: "Exam", value: 36, maxValue: 50 },
-  //     ],
-  //     totalScore: 75,
-  //     grade: "B3",
-  //     remark: "Good",
-  //   },
-  //   {
-  //     subjectName: "Chemistry",
-  //     scores: [
-  //       { name: "CA", value: 22, maxValue: 30 },
-  //       { name: "Test", value: 14, maxValue: 20 },
-  //       { name: "Exam", value: 34, maxValue: 50 },
-  //     ],
-  //     totalScore: 70,
-  //     grade: "C4",
-  //     remark: "Credit",
-  //   },
-  //   {
-  //     subjectName: "Physics",
-  //     scores: [
-  //       { name: "CA", value: 23, maxValue: 30 },
-  //       { name: "Test", value: 16, maxValue: 20 },
-  //       { name: "Exam", value: 37, maxValue: 50 },
-  //     ],
-  //     totalScore: 76,
-  //     grade: "B3",
-  //     remark: "Good",
-  //   },
-  // ],
-
   subjects: [
   {
     subjectName: "Mathematics",
@@ -317,61 +284,61 @@ export const dummyFinalReportCard: FinalReportCard = {
     grade: "C4",
     remark: "Credit",
   },
-  // {
-  //   subjectName: "Agricultural Science",
-  //   scores: [
-  //     { name: "CA", value: 22, maxValue: 30 },
-  //     { name: "Test", value: 14, maxValue: 20 },
-  //     { name: "Exam", value: 33, maxValue: 50 },
-  //   ],
-  //   totalScore: 69,
-  //   grade: "C5",
-  //   remark: "Credit",
-  // },
-  // {
-  //   subjectName: "Computer Studies",
-  //   scores: [
-  //     { name: "CA", value: 28, maxValue: 30 },
-  //     { name: "Test", value: 19, maxValue: 20 },
-  //     { name: "Exam", value: 42, maxValue: 50 },
-  //   ],
-  //   totalScore: 89,
-  //   grade: "A1",
-  //   remark: "Excellent",
-  // },
-  // {
-  //   subjectName: "Data Processing",
-  //   scores: [
-  //     { name: "CA", value: 26, maxValue: 30 },
-  //     { name: "Test", value: 18, maxValue: 20 },
-  //     { name: "Exam", value: 40, maxValue: 50 },
-  //   ],
-  //   totalScore: 84,
-  //   grade: "A1",
-  //   remark: "Excellent",
-  // },
-  // {
-  //   subjectName: "Literature in English",
-  //   scores: [
-  //     { name: "CA", value: 23, maxValue: 30 },
-  //     { name: "Test", value: 15, maxValue: 20 },
-  //     { name: "Exam", value: 35, maxValue: 50 },
-  //   ],
-  //   totalScore: 73,
-  //   grade: "B3",
-  //   remark: "Good",
-  // },
-  // {
-  //   subjectName: "Christian Religious Studies",
-  //   scores: [
-  //     { name: "CA", value: 25, maxValue: 30 },
-  //     { name: "Test", value: 17, maxValue: 20 },
-  //     { name: "Exam", value: 38, maxValue: 50 },
-  //   ],
-  //   totalScore: 80,
-  //   grade: "B2",
-  //   remark: "Very Good",
-  // },
+  {
+    subjectName: "Agricultural Science",
+    scores: [
+      { name: "CA", value: 22, maxValue: 30 },
+      { name: "Test", value: 14, maxValue: 20 },
+      { name: "Exam", value: 33, maxValue: 50 },
+    ],
+    totalScore: 69,
+    grade: "C5",
+    remark: "Credit",
+  },
+  {
+    subjectName: "Computer Studies",
+    scores: [
+      { name: "CA", value: 28, maxValue: 30 },
+      { name: "Test", value: 19, maxValue: 20 },
+      { name: "Exam", value: 42, maxValue: 50 },
+    ],
+    totalScore: 89,
+    grade: "A1",
+    remark: "Excellent",
+  },
+  {
+    subjectName: "Data Processing",
+    scores: [
+      { name: "CA", value: 26, maxValue: 30 },
+      { name: "Test", value: 18, maxValue: 20 },
+      { name: "Exam", value: 40, maxValue: 50 },
+    ],
+    totalScore: 84,
+    grade: "A1",
+    remark: "Excellent",
+  },
+  {
+    subjectName: "Literature in English",
+    scores: [
+      { name: "CA", value: 23, maxValue: 30 },
+      { name: "Test", value: 15, maxValue: 20 },
+      { name: "Exam", value: 35, maxValue: 50 },
+    ],
+    totalScore: 73,
+    grade: "B3",
+    remark: "Good",
+  },
+  {
+    subjectName: "Christian Religious Studies",
+    scores: [
+      { name: "CA", value: 25, maxValue: 30 },
+      { name: "Test", value: 17, maxValue: 20 },
+      { name: "Exam", value: 38, maxValue: 50 },
+    ],
+    totalScore: 80,
+    grade: "B2",
+    remark: "Very Good",
+  },
   {
     subjectName: "Yoruba Language",
     scores: [

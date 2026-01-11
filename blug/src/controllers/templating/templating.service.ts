@@ -176,9 +176,27 @@ Handlebars.registerHelper("lt", (a: number, b: number): boolean => {
    * Example:
    *   {{sub 3 this.scores.length}}
    */
-  Handlebars.registerHelper("sub", (a: number, b: number): number => {
+  // Handlebars.registerHelper("sub", (a: number, b: number): number => {
+  //   return a - b;
+  // });
+
+  /**
+ * Subtract helper (a - b)
+ * 
+ * Used in: {{subtract 100 studentAttendancePercentagePerTerm.firstTermStudentAttendancePercentage}}
+ * 
+ * Example:
+ *   {{subtract 100 85}} => 15
+ */
+Handlebars.registerHelper(
+  "sub",
+  (a: number, b: number): number => {
+    if (typeof a !== "number" || typeof b !== "number") {
+      return 0;
+    }
     return a - b;
-  });
+  }
+);
 
   /**
    * Repeat helper - repeats content n times
@@ -200,6 +218,24 @@ Handlebars.registerHelper("lt", (a: number, b: number): boolean => {
       return result;
     }
   );
+
+  Handlebars.registerHelper(
+  "calculateAttendanceAverage",
+  (...args: unknown[]) => {
+    // Last argument is Handlebars options object
+    const values = args
+      .slice(0, -1)
+      .filter(v => typeof v === "number" && v > 0) as number[];
+
+    if (values.length === 0) return "0";
+
+    const average =
+      values.reduce((sum, val) => sum + val, 0) / values.length;
+
+    return average.toFixed(2);
+  }
+);
+
 
     /**
      * Default value fallback
