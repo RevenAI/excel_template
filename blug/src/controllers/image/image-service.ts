@@ -160,7 +160,7 @@ async uploadFromRequest(
  */
 async listImages(
   tenant: string,
-  category: string
+  category: string,
 ): Promise<Record<string, { thumb?: string; medium?: string; pdf?: string }>> {
   const dir = path.join(this.rootDir, tenant, category);
 
@@ -274,7 +274,7 @@ async listImages(
 async readImageDataUrl(
   tenant: string,
   category: string,
-  fileName: string
+  fileName: string,
 ): Promise<string | null> {
   const filePath = path.join(this.rootDir, tenant, category, fileName);
 

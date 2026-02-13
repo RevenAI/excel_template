@@ -2,7 +2,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import pug, { LocalsObject } from "pug";
-
+import { settings } from "../../config/settings.js";
 
 /**
  * A reusable Pug templating service.
@@ -27,7 +27,7 @@ export class PugService {
     templateFile: string,
     data: LocalsObject = {},
     options: pug.Options = {},
-    useCache = true
+    useCache = !settings.isDevMode //false for easy preview in dev mode
   ): Promise<string> {
     try {
       const absolutePath = path.isAbsolute(templateFile)

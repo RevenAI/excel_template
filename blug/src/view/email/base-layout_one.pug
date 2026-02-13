@@ -1,0 +1,164 @@
+doctype html
+html
+  head
+    meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title= subject || "Welcome"
+
+    style.
+      /* Reset */
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f5f7fa;
+        font-family: Arial, sans-serif;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        color: #333;
+      }
+      img {
+        border: 0;
+        outline: none;
+        text-decoration: none;
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+      }
+      .brand-header {
+        background: linear-gradient(135deg, #1e3a8a, #4f46e5);
+        padding: 40px 20px;
+        text-align: center;
+        color: #ffffff;
+      }
+      .brand-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-top: 15px;
+        line-height: 1.2;
+      }
+      .brand-subtitle {
+        font-size: 13px;
+        opacity: 0.9;
+        margin-top: 5px;
+      }
+      .footer {
+        background: #f9f9f9;
+        border-top: 1px solid #eee;
+        padding: 30px 20px;
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.5;
+        color: #666;
+      }
+      a.cta-button {
+        background: #1e3a8a;
+        color: #ffffff !important;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 13px;
+        display: inline-block;
+        margin: 5px 5px 5px 0;
+        text-decoration: none;
+      }
+      a.cta-secondary {
+        background: #555;
+      }
+
+      /* Responsive */
+      @media only screen and (max-width: 600px) {
+        .container {
+          width: 100% !important;
+        }
+        .brand-title {
+          font-size: 20px !important;
+        }
+        .brand-subtitle {
+          font-size: 12px !important;
+        }
+        a.cta-button {
+          width: 100% !important;
+          box-sizing: border-box;
+          margin-right: 0 !important;
+        }
+      }
+
+  body
+    table.container(width="100%" cellpadding="0" cellspacing="0")
+
+      // =========================
+      // Unified Modern Brand Header
+      // =========================
+      tr
+        td.brand-header
+          if logoUrl
+            //img(src=logoUrl alt=companyNameShort width="140" style="margin: 0 auto;")
+            img(
+            src=logoUrl
+            alt=companyNameShort
+            width="140"
+            style="display:block; width:50px; height:auto; max-height:60px; margin:0 auto;"
+            )
+
+          if companyNameShort
+            div.brand-title= companyNameShort
+          if companyNameFull
+            div.brand-subtitle= companyNameFull
+
+      // =========================
+      // Main Content Block
+      // =========================
+      tr
+        td(style="padding: 30px 20px;")
+          block content
+
+      // =========================
+      // Unified Footer
+      // =========================
+      tr
+        td.footer
+
+          // CTA Buttons
+          if learnMoreUrl || website
+            div(style="margin-bottom: 15px;")
+              if learnMoreUrl
+                a.cta-button.cta-secondary(
+                  href=learnMoreUrl
+                  style="text-decoration:none; border:none; outline:none;"
+                ) Learn More
+              if website
+                a.cta-button(
+                  href=`https://${website}/contact`
+                  style="text-decoration:none; border:none; outline:none;"
+                ) Contact Us
+
+          // Copyright
+          div
+            | © #{year} #{companyNameShort || appName || "Our Company"}. All rights reserved.
+
+          // Website
+          if website
+            div(style="margin-top: 6px;")
+              | Visit us at:
+              |  
+              a(href=`https://${website}` style="color:#4f46e5; text-decoration:none;") #{`www.${website}`}
+
+          // Email
+          if email
+            div(style="margin-top: 6px;")
+              | For inquiries:
+              |  
+              a(href=`mailto:${email}` style="color:#4f46e5; text-decoration:none;") #{email}
+
+          // Unsubscribe
+          if unsubscribeUrl
+            div(style="margin-top: 10px;")
+              a(href=unsubscribeUrl style="color:#4f46e5; text-decoration:none;") Unsubscribe

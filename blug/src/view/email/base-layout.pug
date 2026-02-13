@@ -1,0 +1,176 @@
+doctype html
+html
+  head
+    meta(http-equiv="Content-Type" content="text/html; charset=utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title= subject || "Email Message"
+
+    style.
+      /* Reset */
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f5f7fa;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+        color: #333;
+      }
+      img {
+        border: 0;
+        outline: none;
+        text-decoration: none;
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      .container {
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+      }
+
+      /* Header */
+      .brand-header td {
+        padding: 20px;
+        background: #ffffff;
+      }
+      .brand-logo {
+        border-radius: 50%;
+        display: block;
+      }
+      .brand-text-short {
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.2;
+        color: #333;
+      }
+      .brand-text-full {
+        font-size: 14px;
+        font-weight: 400;
+        color: #666;
+        line-height: 1.2;
+        margin-top: 1px;
+      }
+
+      /* Footer */
+      .footer {
+        background: #f9f9f9;
+        border-top: 1px solid #eee;
+        padding: 30px 20px;
+        text-align: center;
+        font-size: 12px;
+        line-height: 1.5;
+        color: #666;
+      }
+      a.cta-button {
+        background: #1e3a8a;
+        color: #ffffff !important;
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 13px;
+        display: inline-block;
+        margin: 5px 5px 5px 0;
+        text-decoration: none;
+      }
+      a.cta-secondary {
+        background: #555;
+      }
+
+      /* Responsive */
+      @media only screen and (max-width: 600px) {
+        .container {
+          width: 100% !important;
+        }
+        .brand-text-short {
+          font-size: 18px !important;
+        }
+        .brand-text-full {
+          font-size: 12px !important;
+        }
+        a.cta-button {
+          width: 100% !important;
+          box-sizing: border-box;
+          margin-right: 0 !important;
+        }
+      }
+
+  body
+    table.container(width="100%" cellpadding="0" cellspacing="0")
+      // =========================
+      // Modern Brand Header (White, Logo Left)
+      // =========================
+      tr
+        td.brand-header
+          table(width="100%" cellpadding="0" cellspacing="0")
+            tr
+              // Logo Column
+              if logoUrl
+                td(style="width:60px; vertical-align:middle;")
+                  img(
+                    src=logoUrl
+                    alt=companyNameShort
+                    width="50"
+                    height="50"
+                    class="brand-logo"
+                  )
+
+              // Text Column
+              td(style="padding-left:10px; vertical-align:middle;")
+                if companyNameShort
+                  div.brand-text-short= companyNameShort
+                if companyNameFull
+                  div.brand-text-full= companyNameFull
+
+      // =========================
+      // Main Content Block
+      // =========================
+      tr
+        td(style="padding: 30px 20px;")
+          block content
+
+      // =========================
+      // Footer
+      // =========================
+      tr
+        td.footer
+          // CTA Buttons
+          if learnMoreUrl || website
+            div(style="margin-bottom: 15px;")
+              if learnMoreUrl
+                a.cta-button.cta-secondary(
+                  href=learnMoreUrl
+                  style="text-decoration:none; border:none; outline:none;"
+                ) Learn More
+              if website
+                a.cta-button(
+                  href=`https://${website}/contact`
+                  style="text-decoration:none; border:none; outline:none;"
+                ) Contact Us
+
+          // Copyright
+          div
+            | © #{year} #{companyNameShort || appName || "Our Company"}. All rights reserved.
+
+          // Website
+          if website
+            div(style="margin-top: 6px;")
+              | Visit us at:
+              |  
+              a(href=`https://${website}` style="color:#4f46e5; text-decoration:none;") #{`www.${website}`}
+
+          // Email
+          if email
+            div(style="margin-top: 6px;")
+              | For inquiries:
+              |  
+              a(href=`mailto:${email}` style="color:#4f46e5; text-decoration:none;") #{email}
+
+          // Unsubscribe
+          if unsubscribeUrl
+            div(style="margin-top: 10px;")
+              a(href=unsubscribeUrl style="color:#4f46e5;") Unsubscribe

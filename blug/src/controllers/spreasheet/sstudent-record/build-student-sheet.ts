@@ -366,5 +366,6 @@ export async function generateStudentRecordsExcel(
 //   lockStructure: true,
 // };
 
-  return workbook.xlsx.writeBuffer();
+  const arrayBuffer = await workbook.xlsx.writeBuffer();
+  return Buffer.from(arrayBuffer)
 }
